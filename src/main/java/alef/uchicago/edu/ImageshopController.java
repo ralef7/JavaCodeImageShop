@@ -99,6 +99,13 @@ public class ImageshopController implements Initializable {
     @FXML
     private Slider offsetXShadow;
 
+    @FXML
+    private Slider saturationSlider;
+
+    @FXML
+    private MenuItem blndModeMultiply;
+
+
     final static SepiaTone sepiaEffect = new SepiaTone();
 
     private final ColorAdjust monochrome = new ColorAdjust(0, -1, 0, 0);
@@ -146,7 +153,6 @@ public class ImageshopController implements Initializable {
             imageViewer.setOpacity(newValue.doubleValue());
         });
 
-
         hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             setHue(imageViewer, newValue.doubleValue());
         });
@@ -155,7 +161,6 @@ public class ImageshopController implements Initializable {
             imageViewer.setScaleX(newValue.doubleValue());
             imageViewer.setScaleY(newValue.doubleValue());
         });
-
 
         offsetXShadow.valueProperty().addListener((observable1, oldValue, newValue) -> {
                 dropShadowImage(imageViewer, newValue.doubleValue());
@@ -184,42 +189,21 @@ public class ImageshopController implements Initializable {
 
         boxBlur.setOnAction(event -> blurryEffect.boxBlurImage(imageViewer));
 
-        brightSelect.setOnAction(event -> brighterImage(imageViewer));
+        brightSelect.setOnAction(event -> ColoringImage.brighterImage(imageViewer));
 
-        darkSelect.setOnAction(event -> darkerImage(imageViewer));
+        darkSelect.setOnAction(event -> ColoringImage.darkerImage(imageViewer));
 
-//        dropShadow.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                dropShadowImage(imageViewer, 10);
-//            }
-//        });
+        saturationSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            ColoringImage.saturateImage(imageViewer, newValue.doubleValue());
+        });
 
-        if (!saturateCheckBtn.isSelected()){
-            saturateCheckBtn.setOnAction(event -> saturateImage(imageViewer, .3));
-        }
-
+        blndModeMultiply.setOnAction(event -> blendModeMultiply(imageViewer));
     }
-//        saveAsOption.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                try {
-//                    File output = new File("C:/JavaFX/");
-//                    System.out.println("Trying to save");
-//
-//                    ImageIO.write(SwingFXUtils.fromFXImage(imageViewer.snapshot(null, null), null), "jpg", output);
-//                } catch(IOException e)
-//                    {
-//                        System.out.println("Saving failed because of " + e);
-//                    }
-//            }
-//        });
+
         public static void saveToFile(ImageView imageView){
         FileChooser fileChooser = new FileChooser();
-
         File outputFile = fileChooser.showSaveDialog(null);
 
-       // BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
         try{
 
             ImageIO.write(SwingFXUtils.fromFXImage(imageView.snapshot(null, null), null), "png", outputFile);
@@ -229,29 +213,9 @@ public class ImageshopController implements Initializable {
         }
     }
 
-
-
-    private void brighterImage(ImageView imageView) {
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(0.5);
-        imageView.setEffect(colorAdjust);
-    }
-
-    private void darkerImage(ImageView imageView){
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(-.5);
-        imageView.setEffect(colorAdjust);
-    }
-
     private void setHue(ImageView imageView, double hue){
         ColorAdjust colorAdjust = new ColorAdjust();
         colorAdjust.setHue(hue);
-        imageView.setEffect(colorAdjust);
-    }
-
-    private void saturateImage(ImageView imageView, double saturateLevel){
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setSaturation(saturateLevel);
         imageView.setEffect(colorAdjust);
     }
 
@@ -262,5 +226,8 @@ public class ImageshopController implements Initializable {
         imageView.setEffect(dropShadow);
     }
 
+    private void blendModeMultiply(ImageView imageView){
+        imageView.setBlendMode(BlendMode.MULTIPLY);
+    }
 }
 

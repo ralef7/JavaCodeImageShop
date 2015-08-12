@@ -55,7 +55,11 @@
               <items>
                 <MenuItem fx:id="brightSelect" mnemonicParsing="false" text="Bright" />
                   <MenuItem fx:id="darkSelect" mnemonicParsing="false" text="Dark" />
-                  <CheckMenuItem fx:id="saturateCheckBtn" mnemonicParsing="false" text="Saturate" />
+                  <CheckMenuItem fx:id="saturateCheckBtn" mnemonicParsing="false" text="Saturate">
+                     <graphic>
+                        <Slider fx:id="saturationSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="1" value="0.1" />
+                     </graphic>
+                  </CheckMenuItem>
               </items>
             </Menu>
             <Menu fx:id="blurMenu" mnemonicParsing="false" text="Blur Options">
@@ -72,6 +76,7 @@
                         <Slider fx:id="offsetXShadow" max="20.0" />
                      </graphic>
                   </MenuItem>
+                  <MenuItem fx:id="blndModeMultiply" mnemonicParsing="false" text="Blend Mode Multiply" />
               </items>
             </Menu>
       </menus>
