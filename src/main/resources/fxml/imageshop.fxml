@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox id="rootPane" prefHeight="819.0" prefWidth="914.0" style="-fx-background-image: url(&quot;https://s-media-cache-ak0.pinimg.com/736x/ed/a5/8d/eda58dc28e35a5e84c1f587b8c95e6bc.jpg&quot;); -fx-background-size: 100% auto;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="alef.uchicago.edu.ImageshopController">
+
+
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem fx:id="openImage" mnemonicParsing="false" text="Open…" />
+            <Menu mnemonicParsing="false" text="Open Recent" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="closeOption" mnemonicParsing="false" text="Close" />
+            <MenuItem fx:id="saveOption" mnemonicParsing="false" text="Save" />
+            <MenuItem fx:id="saveAsOption" mnemonicParsing="false" text="Save As…" />
+            <MenuItem mnemonicParsing="false" text="Revert" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Preferences…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="exitOption" mnemonicParsing="false" onAction="#exitOptionAction" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" text="Undo" />
+            <MenuItem mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Cut" />
+            <MenuItem mnemonicParsing="false" text="Copy" />
+            <MenuItem mnemonicParsing="false" text="Paste" />
+            <MenuItem mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+          </items>
+        </Menu>
+            <Menu fx:id="coloringMenu" mnemonicParsing="false" text="Coloring">
+              <items>
+                <MenuItem fx:id="brightSelect" mnemonicParsing="false" text="Bright" />
+                  <MenuItem fx:id="darkSelect" mnemonicParsing="false" text="Dark" />
+                  <CheckMenuItem fx:id="saturateCheckBtn" mnemonicParsing="false" text="Saturate" />
+              </items>
+            </Menu>
+            <Menu fx:id="blurMenu" mnemonicParsing="false" text="Blur Options">
+              <items>
+                <MenuItem fx:id="motionBlur" mnemonicParsing="false" text="Motion Blur" />
+                  <MenuItem fx:id="boxBlur" mnemonicParsing="false" text="Box Blur" />
+                  <MenuItem fx:id="gaussianBlur" mnemonicParsing="false" text="Gaussian Blur" />
+              </items>
+            </Menu>
+            <Menu fx:id="advancedOptions" mnemonicParsing="false" text="Advanced">
+              <items>
+                <MenuItem fx:id="dropShadow" mnemonicParsing="false" text="Drop Shadow">
+                     <graphic>
+                        <Slider fx:id="offsetXShadow" max="20.0" />
+                     </graphic>
+                  </MenuItem>
+              </items>
+            </Menu>
+      </menus>
+    </MenuBar>
+      <BorderPane prefHeight="783.0" prefWidth="914.0">
+         <bottom>
+            <Pane fx:id="imagePane" prefHeight="421.0" prefWidth="900.0" style="visibility: false; -fx-background-color: Grey;" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fx:id="imageViewer" fitHeight="395.0" fitWidth="831.0" layoutX="47.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </Pane>
+         </bottom>
+         <left>
+            <VBox prefHeight="324.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="rotateBtn" mnemonicParsing="false" prefHeight="28.0" prefWidth="160.0" text="Reflect" />
+                  <ToggleButton fx:id="monoChromeToggle" blendMode="HARD_LIGHT" depthTest="DISABLE" mnemonicParsing="false" prefHeight="28.0" prefWidth="160.0" style="-fx-background-image: url(&quot;http://media2.popsugar-assets.com/files/2015/05/11/825/n/1922398/d5db8e92_shutterstock_239338216.xxxlarge_2x.jpg&quot;);" text="MonoChrome" textFill="#e1cfcf">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor>
+                  </ToggleButton>
+               </children>
+            </VBox>
+         </left>
+         <center>
+            <Pane prefHeight="167.0" prefWidth="745.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Slider fx:id="opacitySlider" layoutX="1.0" layoutY="25.0" max="1.0" prefHeight="17.0" prefWidth="648.0" value="0.75" />
+                  <Slider fx:id="sepiaSlider" layoutX="1.0" layoutY="63.0" prefHeight="17.0" prefWidth="648.0" />
+                  <Slider fx:id="scalingSlider" layoutX="1.0" layoutY="101.0" max="3.0" min="0.1" prefHeight="17.0" prefWidth="648.0" />
+                  <Label layoutX="7.0" layoutY="4.0" prefHeight="21.0" prefWidth="116.0" text="Opacity Level" />
+                  <Label layoutX="7.0" layoutY="42.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" />
+                  <Label layoutX="5.0" layoutY="80.0" text="Scaling Factor" />
+                  <Label layoutX="5.0" layoutY="118.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
+                  <Slider fx:id="hueSlider" layoutY="139.0" max="1.0" prefHeight="17.0" prefWidth="648.0" />
+               </children>
+            </Pane>
+         </center>
+      </BorderPane>
+  </children>
+</VBox>
