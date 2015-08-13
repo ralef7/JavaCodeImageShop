@@ -34,8 +34,8 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
           <items>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
+            <MenuItem fx:id="undoOption" mnemonicParsing="false" text="Undo" />
+            <MenuItem fx:id="redoOption" mnemonicParsing="false" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Cut" />
             <MenuItem mnemonicParsing="false" text="Copy" />
@@ -77,6 +77,7 @@
                      </graphic>
                   </MenuItem>
                   <MenuItem fx:id="blndModeMultiply" mnemonicParsing="false" text="Blend Mode Multiply" />
+                  <MenuItem fx:id="reflectionBtn" mnemonicParsing="false" text="Reflection" />
               </items>
             </Menu>
       </menus>
@@ -98,6 +99,7 @@
                         <Cursor fx:constant="DEFAULT" />
                      </cursor>
                   </ToggleButton>
+                  <ColorPicker fx:id="colorPicker" prefHeight="34.0" prefWidth="161.0" />
                </children>
             </VBox>
          </left>
@@ -112,6 +114,9 @@
                   <Label layoutX="5.0" layoutY="80.0" text="Scaling Factor" />
                   <Label layoutX="5.0" layoutY="118.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
                   <Slider fx:id="hueSlider" layoutY="139.0" max="1.0" prefHeight="17.0" prefWidth="648.0" />
+                  <ToggleButton fx:id="tgbCircle" layoutX="10.0" layoutY="173.0" mnemonicParsing="false" text="Circle" />
+                  <ToggleButton fx:id="tgbSquare" layoutX="65.0" layoutY="173.0" mnemonicParsing="false" text="Square" />
+                  <ToggleButton fx:id="tgbFilter" layoutX="131.0" layoutY="173.0" mnemonicParsing="false" text="Filter" />
                </children>
             </Pane>
          </center>

@@ -4,12 +4,12 @@ package alef.uchicago.edu;
  * Created by Robert on 8/10/2015.
  */
 
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -26,9 +26,28 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
+import javax.swing.event.ChangeListener;
 import java.util.ResourceBundle;
 
 public class ImageshopController implements Initializable {
+
+    private ToggleGroup mToggleGroup = new ToggleGroup();
+
+    public enum Pen {
+        CIRCLE, SQUARE, FIL, OTHER;
+    }
+
+    private int penSize = 50;
+    private Pen penStyle = Pen.CIRCLE;
+
+    @FXML
+    private ColorPicker colorPicker;
+
+    @FXML
+    private MenuItem redoOption;
+
+    @FXML
+    private MenuItem undoOption;
 
     @FXML
     private MenuItem openImage;
@@ -105,6 +124,17 @@ public class ImageshopController implements Initializable {
     @FXML
     private MenuItem blndModeMultiply;
 
+    @FXML
+    private MenuItem reflectionBtn;
+
+    @FXML
+    private ToggleButton tgbSquare;
+
+    @FXML
+    private ToggleButton tgbCircle;
+
+    @FXML
+    private ToggleButton tgbFilter;
 
     final static SepiaTone sepiaEffect = new SepiaTone();
 
@@ -163,22 +193,39 @@ public class ImageshopController implements Initializable {
         });
 
         offsetXShadow.valueProperty().addListener((observable1, oldValue, newValue) -> {
-                dropShadowImage(imageViewer, newValue.doubleValue());
+            dropShadowImage(imageViewer, newValue.doubleValue());
         });
 
         sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             sepiaEffect.setLevel(newValue.doubleValue());
             imageViewer.setEffect(sepiaEffect);
         });
-        rotateBtn.setOnAction(new EventHandler<ActionEvent>() {
+        rotateBtn.setOnAction(event -> {
+            if ("Reflect".equals(rotateBtn.getText())) {
+                imageViewer.setRotate(180);
+                rotateBtn.setText("Restore");
+            } else {
+                imageViewer.setRotate(0);
+                rotateBtn.setText("Reflect");
+            }
+        });
+
+        tgbCircle.setToggleGroup(mToggleGroup);
+        tgbSquare.setToggleGroup(mToggleGroup);
+        tgbFilter.setToggleGroup(mToggleGroup);
+        tgbCircle.setSelected(true);
+
+        mToggleGroup.selectedToggleProperty().addListener(new javafx.beans.value.ChangeListener<Toggle>() {
             @Override
-            public void handle(ActionEvent event) {
-                if ("Reflect".equals(rotateBtn.getText())) {
-                    imageViewer.setRotate(180);
-                    rotateBtn.setText("Restore");
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (newValue == tgbCircle) {
+                    penStyle = Pen.CIRCLE;
+                } else if (newValue == tgbSquare) {
+                    penStyle = Pen.SQUARE;
+                } else if (newValue == tgbFilter) {
+                    penStyle = Pen.FIL;
                 } else {
-                    imageViewer.setRotate(0);
-                    rotateBtn.setText("Reflect");
+                    penStyle = Pen.CIRCLE;
                 }
             }
         });
@@ -198,6 +245,8 @@ public class ImageshopController implements Initializable {
         });
 
         blndModeMultiply.setOnAction(event -> blendModeMultiply(imageViewer));
+
+        reflectionBtn.setOnAction(event -> reflection(imageViewer));
     }
 
         public static void saveToFile(ImageView imageView){
@@ -226,8 +275,15 @@ public class ImageshopController implements Initializable {
         imageView.setEffect(dropShadow);
     }
 
-    private void blendModeMultiply(ImageView imageView){
+    private void blendModeMultiply(ImageView imageView) {
         imageView.setBlendMode(BlendMode.MULTIPLY);
+    }
+
+    private void reflection(ImageView imageView){
+        Reflection myReflection = new Reflection();
+        myReflection.setFraction(.65);
+        myReflection.bottomOpacityProperty();
+        imageView.setEffect(myReflection);
     }
 }
 
