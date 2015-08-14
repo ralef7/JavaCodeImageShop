@@ -113,10 +113,30 @@
                   <Label layoutX="7.0" layoutY="42.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" />
                   <Label layoutX="5.0" layoutY="80.0" text="Scaling Factor" />
                   <Label layoutX="5.0" layoutY="118.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
-                  <Slider fx:id="hueSlider" layoutY="139.0" max="1.0" prefHeight="17.0" prefWidth="648.0" />
+                  <Slider fx:id="hueSlider" blockIncrement="0.1" focusTraversable="false" layoutY="139.0" majorTickUnit="0.1" max="1.0" minorTickCount="1" prefHeight="17.0" prefWidth="648.0" showTickMarks="true" snapToTicks="true" />
                   <ToggleButton fx:id="tgbCircle" layoutX="10.0" layoutY="173.0" mnemonicParsing="false" text="Circle" />
                   <ToggleButton fx:id="tgbSquare" layoutX="65.0" layoutY="173.0" mnemonicParsing="false" text="Square" />
                   <ToggleButton fx:id="tgbFilter" layoutX="131.0" layoutY="173.0" mnemonicParsing="false" text="Filter" />
+                  <Button fx:id="opacityBtn" layoutX="648.0" layoutY="18.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Opacity">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="sepiaBtn" layoutX="648.0" layoutY="56.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Sepia">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="hueBtn" layoutX="648.0" layoutY="132.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Hue">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="scalingBtn" layoutX="648.0" layoutY="94.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Scaling">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
                </children>
             </Pane>
          </center>

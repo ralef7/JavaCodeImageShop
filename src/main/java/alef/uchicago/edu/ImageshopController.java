@@ -4,17 +4,21 @@ package alef.uchicago.edu;
  * Created by Robert on 8/10/2015.
  */
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.LocatorEx;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.Initializable;
@@ -26,7 +30,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
-import javax.swing.event.ChangeListener;
 import java.util.ResourceBundle;
 
 public class ImageshopController implements Initializable {
@@ -136,16 +139,42 @@ public class ImageshopController implements Initializable {
     @FXML
     private ToggleButton tgbFilter;
 
-    final static SepiaTone sepiaEffect = new SepiaTone();
+    @FXML
+    private Button hueBtn;
+    private double hueLvl;
 
+    @FXML
+    private Button sepiaBtn;
+    private double sepiaLvl;
+
+    @FXML
+    private Button opacityBtn;
+    private double opacityLvl;
+
+    @FXML
+    private Button scalingBtn;
+    private double scalingLvl;
+
+
+    final static SepiaTone sepiaEffect = new SepiaTone();
     private final ColorAdjust monochrome = new ColorAdjust(0, -1, 0, 0);
     private Image image;
+    private ArrayList<Image> imageViewArrayList = new ArrayList<>();
+    private int imageCount = 0;
     BlurImage blurryEffect = new BlurImage();
 
     public void initialize(URL location, ResourceBundle resources) {
 
+        closeOption.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Cc.getInstance().close(imageViewer);
+            }
+        });
+
         openImage.setOnAction(t -> {
             imagePane.setVisible(true);
+            Cc.getInstance().setImageViewer(this.imageViewer);
             FileChooser fileChooser = new FileChooser();
 
             //Set extension filter
@@ -158,11 +187,20 @@ public class ImageshopController implements Initializable {
             try {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 image = SwingFXUtils.toFXImage(bufferedImage, null);
-                System.out.println(image.toString());
-                imageViewer.setImage(image);
-                imageViewer.getImage();
+                Cc.getInstance().setImageAndRefreshView(image);
+                imageViewArrayList.add(image);
+                imageCount += 1;
             } catch (IOException ex) {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        undoOption.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println(imageViewer.getImage().getHeight());
+                imageViewer.setImage(undo(imageViewer.getImage(), imageViewArrayList));
+                System.out.println(imageViewer.getImage().getHeight());
             }
         });
 
@@ -176,29 +214,82 @@ public class ImageshopController implements Initializable {
                 } else {
                     imageViewer.setEffect(null);
                 }
+                ImageView freezeImage = new ImageView();
+                freezeImage.setImage(imageViewer.getImage());
+                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+                System.out.println(imageViewArrayList);
+                imageCount += 1;
             }
         });
 
         opacitySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            imageViewer.setOpacity(newValue.doubleValue());
+            opacityLvl = newValue.doubleValue();
+        });
+        opacityBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                imageViewer.setOpacity(opacityLvl);
+                ImageView freezeImage = new ImageView();
+                freezeImage.setImage(imageViewer.getImage());
+                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+                imageCount += 1;
+
+            }
         });
 
         hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            setHue(imageViewer, newValue.doubleValue());
+            hueLvl = newValue.doubleValue();
+        });
+        hueBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                setHue(imageViewer, hueLvl);
+                ImageView freezeImage = new ImageView();
+                freezeImage.setImage(imageViewer.getImage());
+                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+                imageCount += 1;
+            }
         });
 
         scalingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            imageViewer.setScaleX(newValue.doubleValue());
-            imageViewer.setScaleY(newValue.doubleValue());
+            scalingLvl = newValue.doubleValue();
+        });
+        scalingBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                imageViewer.setScaleX(scalingLvl);
+                imageViewer.setScaleY(scalingLvl);
+//                ImageView freezeImage = new ImageView();
+//                freezeImage.setImage(imageViewer.getImage());
+                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+                imageCount += 1;
+            }
         });
 
         offsetXShadow.valueProperty().addListener((observable1, oldValue, newValue) -> {
             dropShadowImage(imageViewer, newValue.doubleValue());
+//            SnapshotParameters snapshotParameters = new SnapshotParameters();
+//            snapshotParameters.setViewport(new Rectangle2D(0, 0, imageViewer.getFitWidth(), imageViewer.getFitHeight()));
+//            Image snapShot = imagePane.snapshot(snapshotParameters, null);
+            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+            imageCount += 1;
         });
 
         sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            sepiaEffect.setLevel(newValue.doubleValue());
-            imageViewer.setEffect(sepiaEffect);
+            sepiaLvl = newValue.doubleValue();
+        });
+        sepiaBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                sepiaEffect.setLevel(sepiaLvl);
+                imageViewer.setEffect(sepiaEffect);
+//                SnapshotParameters snapshotParameters = new SnapshotParameters();
+//                snapshotParameters.setViewport(new Rectangle2D(0, 0, imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+//                Image snapShot = imagePane.snapshot(snapshotParameters, null);
+                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+                imageCount += 1;
+            }
         });
         rotateBtn.setOnAction(event -> {
             if ("Reflect".equals(rotateBtn.getText())) {
@@ -208,7 +299,10 @@ public class ImageshopController implements Initializable {
                 imageViewer.setRotate(0);
                 rotateBtn.setText("Reflect");
             }
+            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+            imageCount += 1;
         });
+
 
         tgbCircle.setToggleGroup(mToggleGroup);
         tgbSquare.setToggleGroup(mToggleGroup);
@@ -230,7 +324,9 @@ public class ImageshopController implements Initializable {
             }
         });
 
-        gaussianBlur.setOnAction(event -> blurryEffect.gaussianBlurImage(imageViewer));
+        gaussianBlur.setOnAction(event -> {blurryEffect.gaussianBlurImage(imageViewer);
+            imageCount += 1;
+        });
 
         motionBlur.setOnAction(event -> blurryEffect.motionBlurImage(imageViewer));
 
@@ -284,6 +380,27 @@ public class ImageshopController implements Initializable {
         myReflection.setFraction(.65);
         myReflection.bottomOpacityProperty();
         imageView.setEffect(myReflection);
+    }
+
+    private Image undo(Image currentImage, ArrayList<Image> imageArrayList) {
+        System.out.println("Before: pointing to: " + imageArrayList.get(imageCount-1).toString());
+        if (imageCount > 0)
+        if (imageArrayList.size() > 1){
+            currentImage = imageArrayList.get(imageCount-2);
+        }
+        else {
+            currentImage = imageArrayList.get(imageArrayList.size()-1);
+        }
+        imageCount -= 1;
+        System.out.println("After pointing to " + currentImage.toString());
+        return currentImage;
+    }
+
+    private Image snapShot(double width, double height){
+        SnapshotParameters snapshotParameters = new SnapshotParameters();
+        snapshotParameters.setViewport(new Rectangle2D(0, 0, width, height));
+        Image snapShot = imagePane.snapshot(snapshotParameters, null);
+        return snapShot;
     }
 }
 
