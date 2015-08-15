@@ -55,18 +55,18 @@
               <items>
                 <MenuItem fx:id="brightSelect" mnemonicParsing="false" text="Bright" />
                   <MenuItem fx:id="darkSelect" mnemonicParsing="false" text="Dark" />
-                  <CheckMenuItem fx:id="saturateCheckBtn" mnemonicParsing="false" text="Saturate">
-                     <graphic>
-                        <Slider fx:id="saturationSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="1" value="0.1" />
-                     </graphic>
-                  </CheckMenuItem>
+                  <MenuItem fx:id="monochromeMenuItem" mnemonicParsing="false" text="Monochrome" />
+                  <MenuItem fx:id="invertMenuItem" mnemonicParsing="false" text="Invert" />
+                  <MenuItem fx:id="goldenMenuItem" mnemonicParsing="false" text="Gold Bling!" />
+                  <MenuItem fx:id="saturateMenuItem" mnemonicParsing="false" text="Saturate" />
               </items>
             </Menu>
             <Menu fx:id="blurMenu" mnemonicParsing="false" text="Blur Options">
               <items>
-                <MenuItem fx:id="motionBlur" mnemonicParsing="false" text="Motion Blur" />
-                  <MenuItem fx:id="boxBlur" mnemonicParsing="false" text="Box Blur" />
-                  <MenuItem fx:id="gaussianBlur" mnemonicParsing="false" text="Gaussian Blur" />
+                <MenuItem fx:id="motionBlur" mnemonicParsing="false" text="Motion Blur Viewport" />
+                  <MenuItem fx:id="boxBlur" mnemonicParsing="false" text="Box Blur Viewport" />
+                  <MenuItem fx:id="gaussianBlur" mnemonicParsing="false" text="Gaussian Blur viewPort" />
+                  <MenuItem fx:id="blurOffMenuItem" mnemonicParsing="false" text="Blur Off On Viewport" />
               </items>
             </Menu>
             <Menu fx:id="advancedOptions" mnemonicParsing="false" text="Advanced">

@@ -14,6 +14,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,8 @@ import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.*;
+import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
 import java.util.ResourceBundle;
@@ -113,7 +116,7 @@ public class ImageshopController implements Initializable {
     private Slider hueSlider;
 
     @FXML
-    private CheckMenuItem saturateCheckBtn;
+    private MenuItem saturateMenuItem;
 
     @FXML
     private MenuItem dropShadow;
@@ -121,8 +124,6 @@ public class ImageshopController implements Initializable {
     @FXML
     private Slider offsetXShadow;
 
-    @FXML
-    private Slider saturationSlider;
 
     @FXML
     private MenuItem blndModeMultiply;
@@ -140,6 +141,18 @@ public class ImageshopController implements Initializable {
     private ToggleButton tgbFilter;
 
     @FXML
+    private MenuItem monochromeMenuItem;
+
+    @FXML
+    private MenuItem invertMenuItem;
+
+    @FXML
+    private MenuItem goldenMenuItem;
+
+    @FXML
+    private MenuItem blurOffMenuItem;
+
+    @FXML
     private Button hueBtn;
     private double hueLvl;
 
@@ -155,11 +168,12 @@ public class ImageshopController implements Initializable {
     private Button scalingBtn;
     private double scalingLvl;
 
-
-    final static SepiaTone sepiaEffect = new SepiaTone();
-    private final ColorAdjust monochrome = new ColorAdjust(0, -1, 0, 0);
     private Image image;
     private ArrayList<Image> imageViewArrayList = new ArrayList<>();
+    private ArrayList<Effect>  imageViewEffect = new ArrayList<>();
+    private ArrayList<BlendMode> imageViewBlendMode = new ArrayList<>();
+    private ArrayList<Rotate> imageViewRotate = new ArrayList<>();
+
     private int imageCount = 0;
     BlurImage blurryEffect = new BlurImage();
 
@@ -169,6 +183,7 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Cc.getInstance().close(imageViewer);
+                imageViewArrayList = new ArrayList<>();
             }
         });
 
@@ -177,7 +192,6 @@ public class ImageshopController implements Initializable {
             Cc.getInstance().setImageViewer(this.imageViewer);
             FileChooser fileChooser = new FileChooser();
 
-            //Set extension filter
             FileChooser.ExtensionFilter extFilterJPG = new FileChooser.ExtensionFilter("JPG files (*.jpg)", "*.JPG");
             FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.PNG");
             fileChooser.getExtensionFilters().addAll(extFilterJPG, extFilterPNG);
@@ -198,46 +212,29 @@ public class ImageshopController implements Initializable {
         undoOption.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println(imageViewer.getImage().getHeight());
-                imageViewer.setImage(undo(imageViewer.getImage(), imageViewArrayList));
-                System.out.println(imageViewer.getImage().getHeight());
+                undo();
+            }
+        });
+
+        redoOption.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                redo();
             }
         });
 
         saveAsOption.setOnAction(e -> saveToFile(imageViewer));
 
-        monoChromeToggle.setOnAction(new EventHandler<ActionEvent>() {
+        monochromeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (monoChromeToggle.isSelected()) {
-                    imageViewer.setEffect(monochrome);
-                } else {
-                    imageViewer.setEffect(null);
-                }
-                ImageView freezeImage = new ImageView();
-                freezeImage.setImage(imageViewer.getImage());
-                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-                System.out.println(imageViewArrayList);
-                imageCount += 1;
+                setMyImage(ColoringImage.monochromeImage(imageViewer));
             }
         });
 
         opacitySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             opacityLvl = newValue.doubleValue();
         });
-        opacityBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                imageViewer.setOpacity(opacityLvl);
-                ImageView freezeImage = new ImageView();
-                freezeImage.setImage(imageViewer.getImage());
-                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-                imageCount += 1;
-
-            }
-        });
-
         hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             hueLvl = newValue.doubleValue();
         });
@@ -258,10 +255,9 @@ public class ImageshopController implements Initializable {
         scalingBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                Image curImage = imageViewer.getImage();
                 imageViewer.setScaleX(scalingLvl);
                 imageViewer.setScaleY(scalingLvl);
-//                ImageView freezeImage = new ImageView();
-//                freezeImage.setImage(imageViewer.getImage());
                 imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
                 imageCount += 1;
             }
@@ -269,9 +265,6 @@ public class ImageshopController implements Initializable {
 
         offsetXShadow.valueProperty().addListener((observable1, oldValue, newValue) -> {
             dropShadowImage(imageViewer, newValue.doubleValue());
-//            SnapshotParameters snapshotParameters = new SnapshotParameters();
-//            snapshotParameters.setViewport(new Rectangle2D(0, 0, imageViewer.getFitWidth(), imageViewer.getFitHeight()));
-//            Image snapShot = imagePane.snapshot(snapshotParameters, null);
             imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
             imageCount += 1;
         });
@@ -282,13 +275,14 @@ public class ImageshopController implements Initializable {
         sepiaBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                sepiaEffect.setLevel(sepiaLvl);
-                imageViewer.setEffect(sepiaEffect);
-//                SnapshotParameters snapshotParameters = new SnapshotParameters();
-//                snapshotParameters.setViewport(new Rectangle2D(0, 0, imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-//                Image snapShot = imagePane.snapshot(snapshotParameters, null);
-                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-                imageCount += 1;
+                Image curImage = imageViewer.getImage();
+                Image saturated = ImageTransform.transform(curImage, new ColorTransformer() {
+                    @Override
+                    public javafx.scene.paint.Color apply(int x, int y, javafx.scene.paint.Color colorAtXY) {
+                        return colorAtXY.saturate();
+                    }
+                });
+                setMyImage(saturated);
             }
         });
         rotateBtn.setOnAction(event -> {
@@ -302,7 +296,6 @@ public class ImageshopController implements Initializable {
             imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
             imageCount += 1;
         });
-
 
         tgbCircle.setToggleGroup(mToggleGroup);
         tgbSquare.setToggleGroup(mToggleGroup);
@@ -324,25 +317,25 @@ public class ImageshopController implements Initializable {
             }
         });
 
-        gaussianBlur.setOnAction(event -> {blurryEffect.gaussianBlurImage(imageViewer);
-            imageCount += 1;
-        });
-
+        gaussianBlur.setOnAction(event -> blurryEffect.gaussianBlurImage(imageViewer));
         motionBlur.setOnAction(event -> blurryEffect.motionBlurImage(imageViewer));
-
         boxBlur.setOnAction(event -> blurryEffect.boxBlurImage(imageViewer));
+        blurOffMenuItem.setOnAction(event -> blurryEffect.blurImageOff(imageViewer));
 
-        brightSelect.setOnAction(event -> ColoringImage.brighterImage(imageViewer));
+        brightSelect.setOnAction(event -> setMyImage(ColoringImage.brighterImage(imageViewer)));
+        darkSelect.setOnAction(event -> setMyImage(ColoringImage.darkerImage(imageViewer)));
+        monochromeMenuItem.setOnAction(event -> setMyImage(ColoringImage.monochromeImage(imageViewer)));
+        saturateMenuItem.setOnAction(event -> setMyImage(ColoringImage.saturateImage(imageViewer)));
+        invertMenuItem.setOnAction(event -> setMyImage(ColoringImage.invertColorImage(imageViewer)));
+        goldenMenuItem.setOnAction(event -> setMyImage(ColoringImage.goldenBlingOutImage(imageViewer)));
 
-        darkSelect.setOnAction(event -> ColoringImage.darkerImage(imageViewer));
+        blndModeMultiply.setOnAction(event -> {blendModeMultiply(imageViewer);
+            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+            imageCount += 1;});
 
-        saturationSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            ColoringImage.saturateImage(imageViewer, newValue.doubleValue());
-        });
-
-        blndModeMultiply.setOnAction(event -> blendModeMultiply(imageViewer));
-
-        reflectionBtn.setOnAction(event -> reflection(imageViewer));
+        reflectionBtn.setOnAction(event -> {reflection(imageViewer);
+            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+            imageCount += 1;});
     }
 
         public static void saveToFile(ImageView imageView){
@@ -373,6 +366,7 @@ public class ImageshopController implements Initializable {
 
     private void blendModeMultiply(ImageView imageView) {
         imageView.setBlendMode(BlendMode.MULTIPLY);
+
     }
 
     private void reflection(ImageView imageView){
@@ -382,18 +376,41 @@ public class ImageshopController implements Initializable {
         imageView.setEffect(myReflection);
     }
 
-    private Image undo(Image currentImage, ArrayList<Image> imageArrayList) {
-        System.out.println("Before: pointing to: " + imageArrayList.get(imageCount-1).toString());
-        if (imageCount > 0)
-        if (imageArrayList.size() > 1){
-            currentImage = imageArrayList.get(imageCount-2);
+    //call setimage function ... reset head of arraylist, increment imagecount, display image
+    private void setMyImage(Image image){
+
+        imageCount += 1;
+        imageViewArrayList.add(image);
+        imageViewArrayList = new ArrayList<>(imageViewArrayList.subList(0, imageCount));
+        imageViewer.setImage(image);
+        System.out.println("Just added " + image.toString());
+    }
+
+    private void undo() {
+
+        if (imageViewArrayList.size() == imageCount)
+        {
+            imageCount = Math.max(0, imageCount-2);
+            imageViewer.setImage(imageViewArrayList.get(imageCount));
         }
-        else {
-            currentImage = imageArrayList.get(imageArrayList.size()-1);
+        else
+        {
+            System.out.println("Before: pointing to: " + imageViewer.getImage().toString());
+
+            if (imageViewArrayList.size() < 1) return;
+            imageCount = Math.max(0, imageCount - 1);
+            imageViewer.setImage(imageViewArrayList.get(imageCount));
+            System.out.println("After pointing to: " + imageViewer.getImage().toString());
+            System.out.println(imageViewArrayList.toString());
         }
-        imageCount -= 1;
-        System.out.println("After pointing to " + currentImage.toString());
-        return currentImage;
+    }
+
+    private void redo()
+    {
+
+        if (imageViewArrayList.size() < 1 || imageCount >= imageViewArrayList.size()) return;
+        imageCount = Math.max(0, imageCount + 1);
+        imageViewer.setImage(imageViewArrayList.get(imageCount));
     }
 
     private Image snapShot(double width, double height){

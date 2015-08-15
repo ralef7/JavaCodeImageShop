@@ -12,10 +12,9 @@ public class BlurImage {
 
     public void gaussianBlurImage(ImageView imageView){
         GaussianBlur blurEffect = new GaussianBlur();
-
         imageView.setEffect(blurEffect);
-
     }
+
 
     public void boxBlurImage(ImageView imageView){
         BoxBlur boxBlurEffect = new BoxBlur();
@@ -31,5 +30,9 @@ public class BlurImage {
         motionBlur.setRadius(20.0f);
         motionBlur.setAngle(50.0f);
         imageView.setEffect(motionBlur);
+    }
+
+    public void blurImageOff(ImageView imageView){
+        imageView.setEffect(null);
     }
 }
