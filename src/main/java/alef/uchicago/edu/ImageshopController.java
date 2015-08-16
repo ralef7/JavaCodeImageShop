@@ -5,6 +5,7 @@ package alef.uchicago.edu;
  */
 
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.LocatorEx;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -15,6 +16,9 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import java.awt.*;
 import java.awt.Color;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +32,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
@@ -43,8 +50,17 @@ public class ImageshopController implements Initializable {
         CIRCLE, SQUARE, FIL, OTHER;
     }
 
+    public enum FilterStyle {
+        SAT, DRK,  BRIGHT, INVERT, MONOCHROME, GOLD, OTHER
+    }
+
     private int penSize = 50;
     private Pen penStyle = Pen.CIRCLE;
+    private FilterStyle mFilterStyle = FilterStyle.DRK;
+    private javafx.scene.paint.Color mColor = javafx.scene.paint.Color.WHITE;
+
+    @FXML
+    private ComboBox<String> cboSome;
 
     @FXML
     private ColorPicker colorPicker;
@@ -79,11 +95,11 @@ public class ImageshopController implements Initializable {
         System.exit(0);
     }
 
-    @FXML
-    private ToggleButton monoChromeToggle;
+
 
     @FXML
-    private Pane imagePane;
+    private AnchorPane ancPane;
+
 
     @FXML
     private Slider opacitySlider;
@@ -93,9 +109,6 @@ public class ImageshopController implements Initializable {
 
     @FXML
     private Slider sepiaSlider;
-
-    @FXML
-    private Button rotateBtn;
 
     @FXML
     private MenuItem motionBlur;
@@ -153,6 +166,9 @@ public class ImageshopController implements Initializable {
     private MenuItem blurOffMenuItem;
 
     @FXML
+    private ComboBox<String> boxFilters;
+
+    @FXML
     private Button hueBtn;
     private double hueLvl;
 
@@ -173,11 +189,18 @@ public class ImageshopController implements Initializable {
     private ArrayList<Effect>  imageViewEffect = new ArrayList<>();
     private ArrayList<BlendMode> imageViewBlendMode = new ArrayList<>();
     private ArrayList<Rotate> imageViewRotate = new ArrayList<>();
+    private ArrayList<javafx.scene.shape.Shape> removeShapes = new ArrayList<>(1000);
+
+    final static SepiaTone sepiaEffect = new SepiaTone();
+    //Positions we need to find for mouse events.
+    private double xPosForMouseEvent, yPosForMouseEvent, hPosForMouseEvent, wPosForMouseEvent;
 
     private int imageCount = 0;
     BlurImage blurryEffect = new BlurImage();
 
     public void initialize(URL location, ResourceBundle resources) {
+
+        cboSome.setValue("Darker");
 
         closeOption.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -188,7 +211,7 @@ public class ImageshopController implements Initializable {
         });
 
         openImage.setOnAction(t -> {
-            imagePane.setVisible(true);
+            ancPane.setVisible(true);
             Cc.getInstance().setImageViewer(this.imageViewer);
             FileChooser fileChooser = new FileChooser();
 
@@ -201,7 +224,8 @@ public class ImageshopController implements Initializable {
             try {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 image = SwingFXUtils.toFXImage(bufferedImage, null);
-                Cc.getInstance().setImageAndRefreshView(image);
+             //   Cc.getInstance().setImageAndRefreshView(image);
+                imageViewer.setImage(image);
                 imageViewArrayList.add(image);
                 imageCount += 1;
             } catch (IOException ex) {
@@ -225,12 +249,6 @@ public class ImageshopController implements Initializable {
 
         saveAsOption.setOnAction(e -> saveToFile(imageViewer));
 
-        monochromeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(ColoringImage.monochromeImage(imageViewer));
-            }
-        });
 
         opacitySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             opacityLvl = newValue.doubleValue();
@@ -242,10 +260,6 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 setHue(imageViewer, hueLvl);
-                ImageView freezeImage = new ImageView();
-                freezeImage.setImage(imageViewer.getImage());
-                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-                imageCount += 1;
             }
         });
 
@@ -255,18 +269,13 @@ public class ImageshopController implements Initializable {
         scalingBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Image curImage = imageViewer.getImage();
                 imageViewer.setScaleX(scalingLvl);
                 imageViewer.setScaleY(scalingLvl);
-                imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-                imageCount += 1;
             }
         });
 
         offsetXShadow.valueProperty().addListener((observable1, oldValue, newValue) -> {
             dropShadowImage(imageViewer, newValue.doubleValue());
-            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-            imageCount += 1;
         });
 
         sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -275,32 +284,160 @@ public class ImageshopController implements Initializable {
         sepiaBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Image curImage = imageViewer.getImage();
-                Image saturated = ImageTransform.transform(curImage, new ColorTransformer() {
-                    @Override
-                    public javafx.scene.paint.Color apply(int x, int y, javafx.scene.paint.Color colorAtXY) {
-                        return colorAtXY.saturate();
-                    }
-                });
-                setMyImage(saturated);
+                sepiaEffect.setLevel(sepiaLvl);
+                imageViewer.setEffect(sepiaEffect);
             }
         });
-        rotateBtn.setOnAction(event -> {
-            if ("Reflect".equals(rotateBtn.getText())) {
-                imageViewer.setRotate(180);
-                rotateBtn.setText("Restore");
-            } else {
-                imageViewer.setRotate(0);
-                rotateBtn.setText("Reflect");
+        mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (newValue == tgbCircle) {
+                    penStyle = Pen.CIRCLE;
+                } else if (newValue == tgbSquare) {
+                    penStyle = Pen.SQUARE;
+                } else if (newValue == tgbFilter) {
+                    penStyle = Pen.FIL;
+                } else {
+                    penStyle = Pen.FIL;
+                }
             }
-            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-            imageCount += 1;
         });
+
+        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, new EventHandler<javafx.scene.input.MouseEvent>() {
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                System.out.println("Mouse pressed at point " + event.getX() + " and " + event.getY());
+                if (penStyle == Pen.FIL) {
+                    xPosForMouseEvent = (int) event.getSceneX();
+                    yPosForMouseEvent = (int) event.getSceneY();
+                }
+                event.consume();
+            }
+        });
+
+        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, new EventHandler<javafx.scene.input.MouseEvent>() {
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
+                wPosForMouseEvent = (int) event.getSceneX();
+                hPosForMouseEvent = (int) event.getSceneY();
+
+                Image transformImage = null;
+
+                switch (mFilterStyle) {
+                    case DRK:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x >= xPosForMouseEvent && x <= wPosForMouseEvent)
+                                        && (y >= yPosForMouseEvent && y <= hPosForMouseEvent) ? c.deriveColor(0, 1, .5, 1) : c
+                        );
+                        break;
+                    case SAT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x >= xPosForMouseEvent && x <= wPosForMouseEvent)
+                                        && (y >= yPosForMouseEvent && y <= hPosForMouseEvent) ? c.deriveColor(0, 1.0 / .1, 1.0, 1.0) : c
+                        );
+                        break;
+                    case BRIGHT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x >= xPosForMouseEvent && x <= wPosForMouseEvent)
+                                        && (y >= yPosForMouseEvent && y <= hPosForMouseEvent) ? c.brighter() : c
+                        );
+                        break;
+                    case MONOCHROME:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x >= xPosForMouseEvent && x <= wPosForMouseEvent)
+                                        && (y >= yPosForMouseEvent && y <= hPosForMouseEvent) ? c.grayscale() : c
+                        );
+                        break;
+                    case INVERT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x >= xPosForMouseEvent && x <= wPosForMouseEvent)
+                                        && (y >= yPosForMouseEvent && y <= hPosForMouseEvent) ? c.invert() : c
+                        );
+                        break;
+                    case GOLD:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x >= xPosForMouseEvent && x <= wPosForMouseEvent)
+                                        && (y >= yPosForMouseEvent && y <= hPosForMouseEvent) ? c.interpolate(javafx.scene.paint.Color.GOLD, .7) : c
+                        );
+                        break;
+                    default:
+
+                }
+                setMyImage(transformImage);
+                event.consume();
+            }
+        });
+
+        imageViewer.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, new EventHandler<javafx.scene.input.MouseEvent>() {
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                event.consume();
+            }
+        });
+
+        cboSome.getItems().addAll(
+                "Darker",
+                "Saturate",
+                "Brighter",
+                "Invert",
+                "Bling",
+                "Monochrome"
+
+        );
+
+
+        cboSome.valueProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                switch (newValue) {
+                    case "Saturate":
+                        mFilterStyle = FilterStyle.SAT;
+                        break;
+                    case "Darker":
+                        mFilterStyle = FilterStyle.DRK;
+                        break;
+                    case "Brighter":
+                        mFilterStyle = FilterStyle.BRIGHT;
+                        break;
+                    case "Invert":
+                        mFilterStyle = FilterStyle.INVERT;
+                        break;
+                    case "Bling":
+                        mFilterStyle = FilterStyle.GOLD;
+                        break;
+                    case "Monochrome":
+                        mFilterStyle = FilterStyle.MONOCHROME;
+                        break;
+
+                    default:
+                        mFilterStyle = FilterStyle.DRK;
+                        break;
+
+                }
+            }
+        });
+
+
 
         tgbCircle.setToggleGroup(mToggleGroup);
         tgbSquare.setToggleGroup(mToggleGroup);
         tgbFilter.setToggleGroup(mToggleGroup);
         tgbCircle.setSelected(true);
+
+        mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (newValue == tgbSquare) {
+                    penStyle = Pen.SQUARE;
+                } else if (newValue == tgbFilter) {
+                    penStyle = Pen.FIL;
+                } else {
+                    penStyle = Pen.CIRCLE;
+                }
+            }
+        });
+
 
         mToggleGroup.selectedToggleProperty().addListener(new javafx.beans.value.ChangeListener<Toggle>() {
             @Override
@@ -317,6 +454,16 @@ public class ImageshopController implements Initializable {
             }
         });
 
+
+//        sldSize.valueProperty().addListener(new ChangeListener<Number>() {
+//            @Override
+//            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+//                double temp = (Double) newValue; //automatic unboxing
+//                penSize = (int) Math.round(temp);
+//            }
+//        });
+
+
         gaussianBlur.setOnAction(event -> blurryEffect.gaussianBlurImage(imageViewer));
         motionBlur.setOnAction(event -> blurryEffect.motionBlurImage(imageViewer));
         boxBlur.setOnAction(event -> blurryEffect.boxBlurImage(imageViewer));
@@ -329,13 +476,13 @@ public class ImageshopController implements Initializable {
         invertMenuItem.setOnAction(event -> setMyImage(ColoringImage.invertColorImage(imageViewer)));
         goldenMenuItem.setOnAction(event -> setMyImage(ColoringImage.goldenBlingOutImage(imageViewer)));
 
-        blndModeMultiply.setOnAction(event -> {blendModeMultiply(imageViewer);
-            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-            imageCount += 1;});
-
-        reflectionBtn.setOnAction(event -> {reflection(imageViewer);
-            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-            imageCount += 1;});
+//        blndModeMultiply.setOnAction(event -> {blendModeMultiply(imageViewer);
+//            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+//            imageCount += 1;});
+//
+//        reflectionBtn.setOnAction(event -> {reflection(imageViewer);
+//            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
+//            imageCount += 1;});
     }
 
         public static void saveToFile(ImageView imageView){
@@ -416,7 +563,7 @@ public class ImageshopController implements Initializable {
     private Image snapShot(double width, double height){
         SnapshotParameters snapshotParameters = new SnapshotParameters();
         snapshotParameters.setViewport(new Rectangle2D(0, 0, width, height));
-        Image snapShot = imagePane.snapshot(snapshotParameters, null);
+        Image snapShot = ancPane.snapshot(snapshotParameters, null);
         return snapShot;
     }
 }

@@ -83,23 +83,14 @@
       </menus>
     </MenuBar>
       <BorderPane prefHeight="783.0" prefWidth="914.0">
-         <bottom>
-            <Pane fx:id="imagePane" prefHeight="421.0" prefWidth="900.0" style="visibility: false; -fx-background-color: Grey;" BorderPane.alignment="CENTER">
-               <children>
-                  <ImageView fx:id="imageViewer" fitHeight="395.0" fitWidth="831.0" layoutX="47.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </Pane>
-         </bottom>
          <left>
             <VBox prefHeight="324.0" prefWidth="160.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="rotateBtn" mnemonicParsing="false" prefHeight="28.0" prefWidth="160.0" text="Reflect" />
-                  <ToggleButton fx:id="monoChromeToggle" blendMode="HARD_LIGHT" depthTest="DISABLE" mnemonicParsing="false" prefHeight="28.0" prefWidth="160.0" style="-fx-background-image: url(&quot;http://media2.popsugar-assets.com/files/2015/05/11/825/n/1922398/d5db8e92_shutterstock_239338216.xxxlarge_2x.jpg&quot;);" text="MonoChrome" textFill="#e1cfcf">
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor>
-                  </ToggleButton>
                   <ColorPicker fx:id="colorPicker" prefHeight="34.0" prefWidth="161.0" />
+                  <ToggleButton fx:id="tgbFilter" mnemonicParsing="false" prefHeight="31.0" prefWidth="165.0" text="Add Filter Pen" />
+                  <ToggleButton fx:id="tgbCircle" mnemonicParsing="false" prefHeight="31.0" prefWidth="171.0" text="Circle" />
+                  <ToggleButton fx:id="tgbSquare" mnemonicParsing="false" prefHeight="31.0" prefWidth="162.0" text="Square" />
+                  <ComboBox fx:id="cboSome" prefWidth="150.0" />
                </children>
             </VBox>
          </left>
@@ -114,9 +105,6 @@
                   <Label layoutX="5.0" layoutY="80.0" text="Scaling Factor" />
                   <Label layoutX="5.0" layoutY="118.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
                   <Slider fx:id="hueSlider" blockIncrement="0.1" focusTraversable="false" layoutY="139.0" majorTickUnit="0.1" max="1.0" minorTickCount="1" prefHeight="17.0" prefWidth="648.0" showTickMarks="true" snapToTicks="true" />
-                  <ToggleButton fx:id="tgbCircle" layoutX="10.0" layoutY="173.0" mnemonicParsing="false" text="Circle" />
-                  <ToggleButton fx:id="tgbSquare" layoutX="65.0" layoutY="173.0" mnemonicParsing="false" text="Square" />
-                  <ToggleButton fx:id="tgbFilter" layoutX="131.0" layoutY="173.0" mnemonicParsing="false" text="Filter" />
                   <Button fx:id="opacityBtn" layoutX="648.0" layoutY="18.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Opacity">
                      <font>
                         <Font size="12.0" />
@@ -140,6 +128,13 @@
                </children>
             </Pane>
          </center>
+         <bottom>
+            <AnchorPane fx:id="ancPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey; visibility: false;" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fx:id="imageViewer" fitHeight="395.0" fitWidth="831.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </AnchorPane>
+         </bottom>
       </BorderPane>
   </children>
 </VBox>
