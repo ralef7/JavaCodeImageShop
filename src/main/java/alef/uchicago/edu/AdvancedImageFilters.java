@@ -23,9 +23,9 @@ public class AdvancedImageFilters {
         return colorAdjust;
     }
 
-    public static Effect dropShadowImage(double offsetX){
+    public static Effect dropShadowImage(){
         DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(offsetX);
+        dropShadow.setOffsetX(.7);
         dropShadow.setOffsetY(5);
         return dropShadow;
     }

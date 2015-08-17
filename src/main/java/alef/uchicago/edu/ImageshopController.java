@@ -136,9 +136,6 @@ public class ImageshopController implements Initializable {
     @FXML
     private MenuItem dropShadow;
 
-    @FXML
-    private Slider offsetXShadow;
-
 
     @FXML
     private MenuItem blndModeMultiply;
@@ -233,6 +230,7 @@ public class ImageshopController implements Initializable {
                 image = SwingFXUtils.toFXImage(bufferedImage, null);
              //   Cc.getInstance().setImageAndRefreshView(image);
                 imageViewer.setImage(image);
+
                 ancPane.setPrefSize(image.getWidth(), image.getHeight());
                 imageViewer.setFitWidth(ancPane.getPrefWidth());
                 imageViewer.setFitHeight(ancPane.getPrefHeight());
@@ -290,13 +288,19 @@ public class ImageshopController implements Initializable {
             public void handle(ActionEvent event) {
                 imageViewer.setScaleX(scalingLvl);
                 imageViewer.setScaleY(scalingLvl);
-
             }
         });
 
-        offsetXShadow.valueProperty().addListener((observable1, oldValue, newValue) -> {
-            setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage(newValue.doubleValue()));
+        dropShadow.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage());
+            }
         });
+//
+//                (observable1, oldValue, newValue) -> {
+//            setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage(newValue.doubleValue()));
+//        });
 
         sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             sepiaLvl = newValue.doubleValue();
@@ -330,8 +334,8 @@ public class ImageshopController implements Initializable {
                 System.out.println("Mouse pressed at point " + event.getX() + " and " + event.getY());
                 if (penStyle == Pen.FIL) {
 
-                    xPosForMouseEvent = (int)  event.getX();
-                    yPosForMouseEvent = (int)  event.getY();
+                    xPosForMouseEvent = (int) event.getX();
+                    yPosForMouseEvent = (int) event.getY();
 
                     System.out.println("printing at " + xPosForMouseEvent + " " + yPosForMouseEvent);
                 }
@@ -340,64 +344,64 @@ public class ImageshopController implements Initializable {
         });
 
          ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, new EventHandler<javafx.scene.input.MouseEvent>() {
-            @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-                System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
-                wPosForMouseEvent = (int) event.getX();
-                hPosForMouseEvent = (int) event.getY();
+             @Override
+             public void handle(javafx.scene.input.MouseEvent event) {
+                 System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
+                 wPosForMouseEvent = (int) event.getX();
+                 hPosForMouseEvent = (int) event.getY();
 
-                Image transformImage = snapShot(wPosForMouseEvent - xPosForMouseEvent, hPosForMouseEvent - yPosForMouseEvent);
+                 Image transformImage = snapShot(wPosForMouseEvent - xPosForMouseEvent, hPosForMouseEvent - yPosForMouseEvent);
 
-                switch (mFilterStyle) {
-                    case DRK:
-                        transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1, .5, 1) : c
-                        );
-                        break;
-                    case SAT:
-                        transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1.0 / .1, 1.0, 1.0) : c
-                        );
-                        break;
-                    case BRIGHT:
-                        transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.brighter() : c
-                        );
-                        break;
-                    case MONOCHROME:
-                        transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.grayscale() : c
-                        );
-                        break;
-                    case INVERT:
-                        transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
-                                        && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.invert() : c
-                        );
-                        System.out.println("should have painted: " + xPosForMouseEvent + " " + yPosForMouseEvent + " to " + wPosForMouseEvent + " " + hPosForMouseEvent);
-                        break;
-                    case GOLD:
-                        transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.interpolate(javafx.scene.paint.Color.GOLD, .7) : c
-                        );
-                        break;
-                    case DESATURATE:
-                        transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
-                                        && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.desaturate() : c
-                        );
-                    default:
+                 switch (mFilterStyle) {
+                     case DRK:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                         && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1, .5, 1) : c
+                         );
+                         break;
+                     case SAT:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                         && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1.0 / .1, 1.0, 1.0) : c
+                         );
+                         break;
+                     case BRIGHT:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                         && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.brighter() : c
+                         );
+                         break;
+                     case MONOCHROME:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                         && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.grayscale() : c
+                         );
+                         break;
+                     case INVERT:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                         && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.invert() : c
+                         );
+                         System.out.println("should have painted: " + xPosForMouseEvent + " " + yPosForMouseEvent + " to " + wPosForMouseEvent + " " + hPosForMouseEvent);
+                         break;
+                     case GOLD:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                         && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.interpolate(javafx.scene.paint.Color.GOLD, .7) : c
+                         );
+                         break;
+                     case DESATURATE:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                         && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.desaturate() : c
+                         );
+                     default:
 
-                }
-                setMyImage(transformImage, imageViewer.getEffect());
-                event.consume();
-            }
-        });
+                 }
+                 setMyImage(transformImage, imageViewer.getEffect());
+                 event.consume();
+             }
+         });
 
         ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
