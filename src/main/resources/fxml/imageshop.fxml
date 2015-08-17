@@ -59,6 +59,7 @@
                   <MenuItem fx:id="invertMenuItem" mnemonicParsing="false" text="Invert" />
                   <MenuItem fx:id="goldenMenuItem" mnemonicParsing="false" text="Gold Bling!" />
                   <MenuItem fx:id="saturateMenuItem" mnemonicParsing="false" text="Saturate" />
+                  <MenuItem fx:id="desaturateMenuItem" mnemonicParsing="false" text="Desaturate" />
               </items>
             </Menu>
             <Menu fx:id="blurMenu" mnemonicParsing="false" text="Blur Options">
@@ -76,7 +77,7 @@
                         <Slider fx:id="offsetXShadow" max="20.0" />
                      </graphic>
                   </MenuItem>
-                  <MenuItem fx:id="blndModeMultiply" mnemonicParsing="false" text="Blend Mode Multiply" />
+                  <MenuItem fx:id="blndModeMultiply" mnemonicParsing="false" text="Blend Mode Multiply" visible="false" />
                   <MenuItem fx:id="reflectionBtn" mnemonicParsing="false" text="Reflection" />
               </items>
             </Menu>
@@ -90,22 +91,22 @@
                   <ToggleButton fx:id="tgbFilter" mnemonicParsing="false" prefHeight="31.0" prefWidth="165.0" text="Add Filter Pen" />
                   <ToggleButton fx:id="tgbCircle" mnemonicParsing="false" prefHeight="31.0" prefWidth="171.0" text="Circle" />
                   <ToggleButton fx:id="tgbSquare" mnemonicParsing="false" prefHeight="31.0" prefWidth="162.0" text="Square" />
-                  <ComboBox fx:id="cboSome" prefWidth="150.0" />
+                  <ComboBox fx:id="cboSome" prefHeight="31.0" prefWidth="161.0" />
                </children>
             </VBox>
          </left>
          <center>
             <Pane prefHeight="167.0" prefWidth="745.0" BorderPane.alignment="CENTER">
                <children>
-                  <Slider fx:id="opacitySlider" layoutX="1.0" layoutY="25.0" max="1.0" prefHeight="17.0" prefWidth="648.0" value="0.75" />
+                  <Slider fx:id="opacitySlider" layoutX="1.0" layoutY="25.0" max="1.0" prefHeight="17.0" prefWidth="648.0" value="0.75" visible="false" />
                   <Slider fx:id="sepiaSlider" layoutX="1.0" layoutY="63.0" prefHeight="17.0" prefWidth="648.0" />
-                  <Slider fx:id="scalingSlider" layoutX="1.0" layoutY="101.0" max="3.0" min="0.1" prefHeight="17.0" prefWidth="648.0" />
-                  <Label layoutX="7.0" layoutY="4.0" prefHeight="21.0" prefWidth="116.0" text="Opacity Level" />
+                  <Slider fx:id="scalingSlider" layoutX="1.0" layoutY="101.0" max="2.0" min="0.1" prefHeight="17.0" prefWidth="648.0" value="1.0" visible="false" />
+                  <Label layoutX="7.0" layoutY="4.0" prefHeight="21.0" prefWidth="116.0" text="Opacity Level" visible="false" />
                   <Label layoutX="7.0" layoutY="42.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" />
-                  <Label layoutX="5.0" layoutY="80.0" text="Scaling Factor" />
+                  <Label layoutX="5.0" layoutY="80.0" text="Scaling Factor" visible="false" />
                   <Label layoutX="5.0" layoutY="118.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
                   <Slider fx:id="hueSlider" blockIncrement="0.1" focusTraversable="false" layoutY="139.0" majorTickUnit="0.1" max="1.0" minorTickCount="1" prefHeight="17.0" prefWidth="648.0" showTickMarks="true" snapToTicks="true" />
-                  <Button fx:id="opacityBtn" layoutX="648.0" layoutY="18.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Opacity">
+                  <Button fx:id="opacityBtn" layoutX="648.0" layoutY="18.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Opacity" visible="false">
                      <font>
                         <Font size="12.0" />
                      </font>
@@ -120,7 +121,7 @@
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="scalingBtn" layoutX="648.0" layoutY="94.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Scaling">
+                  <Button fx:id="scalingBtn" layoutX="648.0" layoutY="94.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Scaling" visible="false">
                      <font>
                         <Font size="12.0" />
                      </font>
@@ -129,9 +130,9 @@
             </Pane>
          </center>
          <bottom>
-            <AnchorPane fx:id="ancPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: Grey; visibility: false;" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="ancPane" prefHeight="584.0" prefWidth="914.0" style="-fx-background-color: Grey; visibility: false;" BorderPane.alignment="CENTER">
                <children>
-                  <ImageView fx:id="imageViewer" fitHeight="395.0" fitWidth="831.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="imageViewer" fitHeight="379.0" fitWidth="914.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </AnchorPane>
          </bottom>

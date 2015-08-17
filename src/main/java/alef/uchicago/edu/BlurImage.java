@@ -1,6 +1,7 @@
 package alef.uchicago.edu;
 
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.MotionBlur;
 import javafx.scene.image.ImageView;
@@ -10,26 +11,26 @@ import javafx.scene.image.ImageView;
  */
 public class BlurImage {
 
-    public void gaussianBlurImage(ImageView imageView){
+    public Effect gaussianBlurImage(){
         GaussianBlur blurEffect = new GaussianBlur();
-        imageView.setEffect(blurEffect);
+        return blurEffect;
     }
 
 
-    public void boxBlurImage(ImageView imageView){
+    public Effect boxBlurImage(){
         BoxBlur boxBlurEffect = new BoxBlur();
         boxBlurEffect.setWidth(7);
         boxBlurEffect.setHeight(7);
         boxBlurEffect.setIterations(3);
-        imageView.setEffect(boxBlurEffect);
+        return boxBlurEffect;
     }
 
-    public void motionBlurImage(ImageView imageView){
+    public Effect motionBlurImage(){
         MotionBlur motionBlur = new MotionBlur();
 
         motionBlur.setRadius(20.0f);
         motionBlur.setAngle(50.0f);
-        imageView.setEffect(motionBlur);
+        return motionBlur;
     }
 
     public void blurImageOff(ImageView imageView){

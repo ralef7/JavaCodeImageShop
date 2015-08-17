@@ -78,4 +78,16 @@ public class ColoringImage {
             });
             return golden;
     }
+
+    public static Image desaturateImage (ImageView imageView)
+    {
+        Image curImage = imageView.getImage();
+        Image desaturate = ImageTransform.transform(curImage, new ColorTransformer() {
+            @Override
+            public javafx.scene.paint.Color apply(int x, int y, javafx.scene.paint.Color colorAtXY) {
+                return colorAtXY.desaturate();
+            }
+        });
+        return desaturate;
+    }
 }
