@@ -18,6 +18,7 @@ import javafx.scene.control.*;
 import java.awt.*;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.ScrollPane;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -53,13 +54,13 @@ public class ImageshopController implements Initializable {
     }
 
     public enum FilterStyle {
-        SAT, DRK,  BRIGHT, INVERT, MONOCHROME, GOLD, DESATURATE, OTHER
+        SAT, DRK,  BRIGHT, INVERT, MONOCHROME, GOLD, DESATURATE, WHITEOUT, BLACKOUT, OTHER
     }
 
     private int penSize = 50;
     private Pen penStyle = Pen.CIRCLE;
     private FilterStyle mFilterStyle = FilterStyle.DRK;
-    private javafx.scene.paint.Color mColor = javafx.scene.paint.Color.WHITE;
+    private javafx.scene.paint.Color mColor;
 
     @FXML
     private ComboBox<String> cboSome;
@@ -349,6 +350,17 @@ public class ImageshopController implements Initializable {
                  System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
                  wPosForMouseEvent = (int) event.getX();
                  hPosForMouseEvent = (int) event.getY();
+                 if (penStyle == Pen.CIRCLE || penStyle == Pen.SQUARE){
+
+                     Image snapshot = snapShot(imageViewer.getFitWidth(), imageViewer.getFitHeight());
+
+                     setMyImage(snapshot, imageViewer.getEffect());
+                     ancPane.getChildren().removeAll(removeShapes);
+                   //  removeShapes.clear();
+
+
+                 }
+
 
                  Image transformImage = snapShot(wPosForMouseEvent - xPosForMouseEvent, hPosForMouseEvent - yPosForMouseEvent);
 
@@ -395,8 +407,20 @@ public class ImageshopController implements Initializable {
                                  (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
                                          && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.desaturate() : c
                          );
+                         break;
+                     case WHITEOUT:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                         && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.web("White") : c
+                         );
+                         break;
+                     case BLACKOUT:
+                         transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                 (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                         && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.web("Black") : c
+                         );
+                         break;
                      default:
-
                  }
                  setMyImage(transformImage, imageViewer.getEffect());
                  event.consume();
@@ -406,7 +430,44 @@ public class ImageshopController implements Initializable {
         ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
+                if (penStyle == Pen.FIL){
+                    event.consume();
+                    return;
+                }
+                xPosForMouseEvent = (int) event.getX();
+                yPosForMouseEvent = (int) event.getY();
+
+                int nShape = 0;
+                //default value
+                javafx.scene.shape.Shape shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, 10);
+                switch (penStyle) {
+                    case CIRCLE:
+                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
+                        break;
+                    case SQUARE:
+                        shape = new javafx.scene.shape.Rectangle(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
+                        break;
+
+
+                    default:
+                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
+                        break;
+
+                }
+
+                shape.setStroke(mColor);
+                shape.setFill(mColor);
+
+                ancPane.getChildren().add(shape);
+                removeShapes.add(shape);
                 event.consume();
+            }
+        });
+
+        colorPicker.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                mColor = colorPicker.getValue();
             }
         });
 
@@ -417,7 +478,9 @@ public class ImageshopController implements Initializable {
                 "Invert",
                 "Bling",
                 "Monochrome",
-                "Desaturate"
+                "Desaturate",
+                "Blackout",
+                "Whiteout"
         );
 
         cboSome.valueProperty().addListener(new ChangeListener<String>() {
@@ -445,21 +508,23 @@ public class ImageshopController implements Initializable {
                     case "Desaturate":
                         mFilterStyle = FilterStyle.DESATURATE;
                         break;
-
+                    case "Blackout":
+                        mFilterStyle = FilterStyle.BLACKOUT;
+                        break;
+                    case "Whiteout":
+                        mFilterStyle = FilterStyle.WHITEOUT;
+                        break;
                     default:
                         mFilterStyle = FilterStyle.DRK;
                         break;
-
                 }
             }
         });
 
-
-
         tgbCircle.setToggleGroup(mToggleGroup);
         tgbSquare.setToggleGroup(mToggleGroup);
         tgbFilter.setToggleGroup(mToggleGroup);
-        tgbCircle.setSelected(true);
+        tgbFilter.setSelected(true);
 
         mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
@@ -473,8 +538,7 @@ public class ImageshopController implements Initializable {
                 }
             }
         });
-
-
+        
         mToggleGroup.selectedToggleProperty().addListener(new javafx.beans.value.ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -485,7 +549,7 @@ public class ImageshopController implements Initializable {
                 } else if (newValue == tgbFilter) {
                     penStyle = Pen.FIL;
                 } else {
-                    penStyle = Pen.CIRCLE;
+                    penStyle = Pen.FIL;
                 }
             }
         });
@@ -540,7 +604,18 @@ public class ImageshopController implements Initializable {
     //call setimage function ... reset head of arraylist, increment imagecount, display image
     private void setMyImage(Image image, Effect effect){
 
-        imageCount += 1;
+        if (imageViewArrayList.size() != imageCount)
+        {
+            //Fixed bug where if you started undoing through arraylists and then started applying filters again, you would
+            //skip one of the applied filters when resuming your undo.
+            imageCount += 2;
+        }
+        else
+        {
+            imageCount += 1;
+        }
+
+
         imageViewArrayList.add(image);
         imageViewEffect.add(effect);
         imageViewEffect = new ArrayList<>(imageViewEffect.subList(0, imageCount));

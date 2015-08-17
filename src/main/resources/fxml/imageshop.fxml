@@ -83,11 +83,18 @@
          <left>
             <VBox prefHeight="324.0" prefWidth="160.0" BorderPane.alignment="CENTER">
                <children>
+                  <ToggleButton fx:id="tgbFilter" blendMode="SCREEN" mnemonicParsing="false" prefHeight="31.0" prefWidth="165.0" text="Add Filter Pen">
+                     <effect>
+                        <Glow>
+                           <input>
+                              <InnerShadow />
+                           </input>
+                        </Glow>
+                     </effect></ToggleButton>
+                  <ComboBox fx:id="cboSome" blendMode="LIGHTEN" prefHeight="31.0" prefWidth="161.0" />
                   <ColorPicker fx:id="colorPicker" prefHeight="34.0" prefWidth="161.0" />
-                  <ToggleButton fx:id="tgbFilter" mnemonicParsing="false" prefHeight="31.0" prefWidth="165.0" text="Add Filter Pen" />
                   <ToggleButton fx:id="tgbCircle" mnemonicParsing="false" prefHeight="31.0" prefWidth="171.0" text="Circle" />
-                  <ToggleButton fx:id="tgbSquare" mnemonicParsing="false" prefHeight="31.0" prefWidth="162.0" text="Square" />
-                  <ComboBox fx:id="cboSome" prefHeight="31.0" prefWidth="161.0" />
+                  <ToggleButton fx:id="tgbSquare" mnemonicParsing="false" prefHeight="31.0" prefWidth="162.0" text="Square" visible="false" />
                </children>
             </VBox>
          </left>
