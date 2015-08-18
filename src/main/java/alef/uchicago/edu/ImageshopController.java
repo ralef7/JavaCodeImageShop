@@ -98,8 +98,6 @@ public class ImageshopController implements Initializable {
         System.exit(0);
     }
 
-
-
     @FXML
     private AnchorPane ancPane;
 
@@ -263,53 +261,6 @@ public class ImageshopController implements Initializable {
 //        opacitySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 //            opacityLvl = newValue.doubleValue();
 //        });
-
-        hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            hueLvl = newValue.doubleValue();
-        });
-        hueBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(imageViewer.getImage(), AdvancedImageFilters.setHue(hueLvl));
-            }
-        });
-
-        reflectionBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(imageViewer.getImage(), AdvancedImageFilters.reflection());
-            }
-        });
-
-        scalingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            scalingLvl = newValue.doubleValue();
-        });
-
-        scalingBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                AdvancedImageFilters.resizeImage(ancPane, imageViewer, scalingLvl);
-            }
-        });
-
-        dropShadow.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage());
-            }
-        });
-
-        sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            sepiaLvl = newValue.doubleValue();
-        });
-        sepiaBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                sepiaEffect.setLevel(sepiaLvl);
-                setMyImage(imageViewer.getImage(), sepiaEffect);
-            }
-        });
         mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -341,7 +292,46 @@ public class ImageshopController implements Initializable {
             }
         });
 
-         ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, new EventHandler<javafx.scene.input.MouseEvent>() {
+
+        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, new EventHandler<javafx.scene.input.MouseEvent>() {
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                if (penStyle == Pen.FIL){
+                    event.consume();
+                    return;
+                }
+                xPosForMouseEvent = (int) event.getX();
+                yPosForMouseEvent = (int) event.getY();
+
+                int nShape = 0;
+                //default value
+                javafx.scene.shape.Shape shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, 10);
+                switch (penStyle) {
+                    case CIRCLE:
+                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
+                        break;
+                    case SQUARE:
+                        shape = new javafx.scene.shape.Rectangle(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
+                        break;
+
+
+                    default:
+                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
+                        break;
+
+                }
+
+                shape.setStroke(mColor);
+                shape.setFill(mColor);
+
+                ancPane.getChildren().add(shape);
+                removeShapes.add(shape);
+                event.consume();
+            }
+        });
+
+
+        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, new EventHandler<javafx.scene.input.MouseEvent>() {
              @Override
              public void handle(javafx.scene.input.MouseEvent event) {
                  System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
@@ -349,7 +339,7 @@ public class ImageshopController implements Initializable {
                  hPosForMouseEvent = (int) event.getY();
                  if (penStyle == Pen.CIRCLE || penStyle == Pen.SQUARE){
 
-                     Image snapshot = snapShot(imageViewer.getFitWidth(), imageViewer.getFitHeight());
+                     Image snapshot = snapShot(ancPane.getPrefWidth(), ancPane.getPrefHeight());
 
                      setMyImage(snapshot, imageViewer.getEffect());
                      ancPane.getChildren().removeAll(removeShapes);
@@ -423,43 +413,6 @@ public class ImageshopController implements Initializable {
                  event.consume();
              }
          });
-
-        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, new EventHandler<javafx.scene.input.MouseEvent>() {
-            @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-                if (penStyle == Pen.FIL){
-                    event.consume();
-                    return;
-                }
-                xPosForMouseEvent = (int) event.getX();
-                yPosForMouseEvent = (int) event.getY();
-
-                int nShape = 0;
-                //default value
-                javafx.scene.shape.Shape shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, 10);
-                switch (penStyle) {
-                    case CIRCLE:
-                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
-                        break;
-                    case SQUARE:
-                        shape = new javafx.scene.shape.Rectangle(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
-                        break;
-
-
-                    default:
-                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
-                        break;
-
-                }
-
-                shape.setStroke(mColor);
-                shape.setFill(mColor);
-
-                ancPane.getChildren().add(shape);
-                removeShapes.add(shape);
-                event.consume();
-            }
-        });
 
         colorPicker.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -551,7 +504,6 @@ public class ImageshopController implements Initializable {
             }
         });
 
-
 //        sldSize.valueProperty().addListener(new ChangeListener<Number>() {
 //            @Override
 //            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -560,12 +512,13 @@ public class ImageshopController implements Initializable {
 //            }
 //        });
 
-
+        //blur menu items
         gaussianBlur.setOnAction(event -> setMyImage(imageViewer.getImage(), blurryEffect.gaussianBlurImage()));
         motionBlur.setOnAction(event -> setMyImage(imageViewer.getImage(), blurryEffect.motionBlurImage()));
         boxBlur.setOnAction(event -> setMyImage(imageViewer.getImage(), blurryEffect.boxBlurImage()));
         blurOffMenuItem.setOnAction(event -> setMyImage(imageViewer.getImage(), null));
 
+        //color menu items
         brightSelect.setOnAction(event -> setMyImage(ColoringImage.brighterImage(imageViewer), imageViewer.getEffect()));
         darkSelect.setOnAction(event -> setMyImage(ColoringImage.darkerImage(imageViewer), imageViewer.getEffect()));
         monochromeMenuItem.setOnAction(event -> setMyImage(ColoringImage.monochromeImage(imageViewer), imageViewer.getEffect()));
@@ -573,6 +526,54 @@ public class ImageshopController implements Initializable {
         invertMenuItem.setOnAction(event -> setMyImage(ColoringImage.invertColorImage(imageViewer), imageViewer.getEffect()));
         goldenMenuItem.setOnAction(event -> setMyImage(ColoringImage.goldenBlingOutImage(imageViewer), imageViewer.getEffect()));
         desaturateMenuItem.setOnAction(event -> setMyImage(ColoringImage.desaturateImage(imageViewer), imageViewer.getEffect()));
+
+        //Other advanced filters and actions for image
+        hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            hueLvl = newValue.doubleValue();
+        });
+        hueBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                setMyImage(imageViewer.getImage(), AdvancedImageFilters.setHue(hueLvl));
+            }
+        });
+
+        reflectionBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                setMyImage(imageViewer.getImage(), AdvancedImageFilters.reflection());
+            }
+        });
+
+        scalingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            scalingLvl = newValue.doubleValue();
+        });
+
+        scalingBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                AdvancedImageFilters.resizeImage(ancPane, imageViewer, scalingLvl);
+            }
+        });
+
+        dropShadow.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage());
+            }
+        });
+
+        sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            sepiaLvl = newValue.doubleValue();
+        });
+        sepiaBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                sepiaEffect.setLevel(sepiaLvl);
+                setMyImage(imageViewer.getImage(), sepiaEffect);
+            }
+        });
 
 //        blndModeMultiply.setOnAction(event -> {blendModeMultiply(imageViewer);
 //            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
@@ -642,6 +643,7 @@ public class ImageshopController implements Initializable {
             System.out.println(imageViewArrayList.toString());
         }
     }
+
 
     private void redo()
     {
