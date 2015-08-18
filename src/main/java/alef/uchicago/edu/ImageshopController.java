@@ -284,11 +284,12 @@ public class ImageshopController implements Initializable {
         scalingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             scalingLvl = newValue.doubleValue();
         });
+
         scalingBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                imageViewer.setScaleX(scalingLvl);
-                imageViewer.setScaleY(scalingLvl);
+
+                AdvancedImageFilters.resizeImage(ancPane, imageViewer, scalingLvl);
             }
         });
 
@@ -298,10 +299,6 @@ public class ImageshopController implements Initializable {
                 setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage());
             }
         });
-//
-//                (observable1, oldValue, newValue) -> {
-//            setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage(newValue.doubleValue()));
-//        });
 
         sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             sepiaLvl = newValue.doubleValue();
@@ -538,7 +535,7 @@ public class ImageshopController implements Initializable {
                 }
             }
         });
-        
+
         mToggleGroup.selectedToggleProperty().addListener(new javafx.beans.value.ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
