@@ -167,6 +167,9 @@ public class ImageshopController implements Initializable {
     private MenuItem blurOffMenuItem;
 
     @FXML
+    private MenuItem gradientMenu;
+
+    @FXML
     private ComboBox<String> boxFilters;
 
     @FXML
@@ -526,6 +529,7 @@ public class ImageshopController implements Initializable {
         invertMenuItem.setOnAction(event -> setMyImage(ColoringImage.invertColorImage(imageViewer), imageViewer.getEffect()));
         goldenMenuItem.setOnAction(event -> setMyImage(ColoringImage.goldenBlingOutImage(imageViewer), imageViewer.getEffect()));
         desaturateMenuItem.setOnAction(event -> setMyImage(ColoringImage.desaturateImage(imageViewer), imageViewer.getEffect()));
+        gradientMenu.setOnAction(event -> setMyImage(ColoringImage.linearGradientImage(imageViewer), imageViewer.getEffect()));
 
         //Other advanced filters and actions for image
         hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {

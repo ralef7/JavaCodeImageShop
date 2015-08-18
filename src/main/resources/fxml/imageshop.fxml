@@ -60,6 +60,7 @@
                   <MenuItem fx:id="goldenMenuItem" mnemonicParsing="false" text="Gold Bling!" />
                   <MenuItem fx:id="saturateMenuItem" mnemonicParsing="false" text="Saturate" />
                   <MenuItem fx:id="desaturateMenuItem" mnemonicParsing="false" text="Desaturate" />
+                  <MenuItem fx:id="gradientMenu" mnemonicParsing="false" text="Gradient" />
               </items>
             </Menu>
             <Menu fx:id="blurMenu" mnemonicParsing="false" text="Blur Options">
