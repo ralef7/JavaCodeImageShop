@@ -189,6 +189,7 @@ public class ImageshopController implements Initializable {
     private double scalingLvl;
 
     private Image image;
+    private ArrayList<FullImage> fullImageArrayList = new ArrayList<>();
     private ArrayList<Image> imageViewArrayList = new ArrayList<>();
     private ArrayList<Effect>  imageViewEffect = new ArrayList<>();
     private ArrayList<BlendMode> imageViewBlendMode = new ArrayList<>();
@@ -210,9 +211,11 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Cc.getInstance().close(imageViewer);
-                imageViewArrayList = new ArrayList<>();
-                imageViewEffect = new ArrayList<>();
+           //     imageViewArrayList = new ArrayList<>();
+            //    imageViewEffect = new ArrayList<>();
                 imageCount = 0;
+
+                fullImageArrayList = new ArrayList<>();
             }
         });
 
@@ -230,21 +233,20 @@ public class ImageshopController implements Initializable {
             try {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 image = SwingFXUtils.toFXImage(bufferedImage, null);
-             //   Cc.getInstance().setImageAndRefreshView(image);
                 imageViewer.setImage(image);
-
 
                 ancPane.setPrefSize(image.getWidth(), image.getHeight());
                 imageViewer.setFitWidth(ancPane.getPrefWidth());
                 imageViewer.setFitHeight(ancPane.getPrefHeight());
-                imageViewArrayList.add(image);
-                imageViewEffect.add(null);
+             //   imageViewArrayList.add(image);
+             //  imageViewEffect.add(null);
+
+                fullImageArrayList.add(new FullImage(null, image));
                 imageCount += 1;
 
             } catch (IOException ex) {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("imageCount: " + imageCount + ", " + "arraylistSize: " + imageViewArrayList.size());
         });
 
         undoOption.setOnAction(new EventHandler<ActionEvent>() {
@@ -261,8 +263,7 @@ public class ImageshopController implements Initializable {
             }
         });
 
-        saveAsOption.setOnAction(e -> saveToFile(imageViewer));
-
+        saveAsOption.setOnAction(e -> saveToFile());
 
 //        opacitySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
 //            opacityLvl = newValue.doubleValue();
@@ -568,7 +569,6 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage());
-                System.out.println("imageCount: " + imageCount + ", " + "imageViewArraylistsize: " + imageViewArrayList.size());
             }
         });
 
@@ -589,13 +589,13 @@ public class ImageshopController implements Initializable {
 //
     }
 
-        public static void saveToFile(ImageView imageView){
+        private void saveToFile(){
         FileChooser fileChooser = new FileChooser();
         File outputFile = fileChooser.showSaveDialog(null);
 
         try{
 
-            ImageIO.write(SwingFXUtils.fromFXImage(imageView.snapshot(null, null), null), "png", outputFile);
+            ImageIO.write(SwingFXUtils.fromFXImage(imageViewer.snapshot(null, null), null), "png", outputFile);
         }
         catch (IOException e){
             e.getStackTrace();
@@ -610,7 +610,8 @@ public class ImageshopController implements Initializable {
     //call setimage function ... reset head of arraylist, increment imagecount, display image
     private void setMyImage(Image image, Effect effect){
 
-        if (imageViewArrayList.size() != imageCount)
+        if (fullImageArrayList.size() != imageCount)
+      //  if (imageViewArrayList.size() != imageCount)
         {
             //Fixed bug where if you started undoing through arraylists and then started applying filters again, you would
             //skip one of the applied filters when resuming your undo.
@@ -620,55 +621,60 @@ public class ImageshopController implements Initializable {
         {
             imageCount += 1;
         }
+        FullImage fullImage = new FullImage(effect, image);
+        fullImageArrayList.add(fullImage);
+     //   imageViewArrayList.add(image);
+     //   imageViewEffect.add(effect);
+     //   imageViewEffect = new ArrayList<>(imageViewEffect.subList(0, imageCount));
+     //   imageViewArrayList = new ArrayList<>(imageViewArrayList.subList(0, imageCount));
+        fullImageArrayList = new ArrayList<>(fullImageArrayList.subList(0, imageCount));
 
-
-        imageViewArrayList.add(image);
-        imageViewEffect.add(effect);
-        imageViewEffect = new ArrayList<>(imageViewEffect.subList(0, imageCount));
-        imageViewArrayList = new ArrayList<>(imageViewArrayList.subList(0, imageCount));
         //fixed this gnarly bug where if you began rebuilding your arraylist after undoing some, it would
         //hold the wrong image in imageCount-1.  Hard to spot. should be fixed. hollaaaa
-        imageViewArrayList.set(imageCount-1, image);
-        imageViewEffect.set(imageCount-1, effect);
+      //  imageViewArrayList.set(imageCount - 1, image);
+      //  imageViewEffect.set(imageCount - 1, effect);
+        fullImageArrayList.set(imageCount - 1, fullImage);
+
         imageViewer.setEffect(effect);
         imageViewer.setImage(image);
-        System.out.println("imageCount " + imageCount + " arraynumsize " + imageViewArrayList.size());
     }
 
     private void undo() {
-
-        if (imageViewArrayList.size() == imageCount)
+        if (fullImageArrayList.size() == imageCount)
+   //     if (imageViewArrayList.size() == imageCount)
         {
             imageCount = Math.max(0, imageCount-2);
-            imageViewer.setImage(imageViewArrayList.get(imageCount));
-            imageViewer.setEffect(imageViewEffect.get(imageCount));
-            System.out.println("imageCount " + imageCount + "arraynumsize" + imageViewArrayList.size());
+            FullImage backupImage = fullImageArrayList.get(imageCount);
+            imageViewer.setImage(backupImage.getImage());
+            imageViewer.setEffect(backupImage.getEffect());
+
+        //    imageViewer.setImage(imageViewArrayList.get(imageCount));
+        //    imageViewer.setEffect(imageViewEffect.get(imageCount));
 
         }
         else
         {
-            System.out.println("Before: pointing to: " + imageViewer.getImage().toString());
-
-            if (imageViewArrayList.size() < 1) return;
+            if (fullImageArrayList.size() < 1) return;
+      //      if (imageViewArrayList.size() < 1) return;
             imageCount = Math.max(0, imageCount - 1);
-            imageViewer.setImage(imageViewArrayList.get(imageCount));
-            imageViewer.setEffect(imageViewEffect.get(imageCount));
-            System.out.println("imageCount " + imageCount + "arraynumsize" + imageViewArrayList.size());
-
-
+            FullImage backupImage = fullImageArrayList.get(imageCount);
+            imageViewer.setImage(backupImage.getImage());
+            imageViewer.setEffect(backupImage.getEffect());
+           // imageViewer.setImage(imageViewArrayList.get(imageCount));
+           // imageViewer.setEffect(imageViewEffect.get(imageCount));
         }
     }
 
-
     private void redo()
     {
-
-        if (imageViewArrayList.size() < 1 || imageCount >= imageViewArrayList.size()) return;
+        if (fullImageArrayList.size() < 1 || imageCount >= fullImageArrayList.size()-1) return;
+      //  if (imageViewArrayList.size() < 1 || imageCount >= imageViewArrayList.size()-1) return;
         imageCount = Math.max(0, imageCount + 1);
-        imageViewer.setImage(imageViewArrayList.get(imageCount));
-        imageViewer.setEffect(imageViewEffect.get(imageCount));
-        System.out.println("imageCount " + imageCount + "arraynumsize" + imageViewArrayList.size());
-
+        FullImage redoImage = fullImageArrayList.get(imageCount);
+        imageViewer.setImage(redoImage.getImage());
+        imageViewer.setEffect(redoImage.getEffect());
+       // imageViewer.setImage(imageViewArrayList.get(imageCount));
+       // imageViewer.setEffect(imageViewEffect.get(imageCount));
     }
 
     private Image snapShot(double width, double height){
