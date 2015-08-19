@@ -1,10 +1,8 @@
 package alef.uchicago.edu;
 
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
-import javafx.scene.effect.Reflection;
+import javafx.scene.effect.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 
 import javax.swing.text.html.ImageView;
 
@@ -33,6 +31,19 @@ public class AdvancedImageFilters {
         return dropShadow;
     }
 
+    public static Effect innerShadowImage(){
+        InnerShadow innerShadow = new InnerShadow();
+        innerShadow.setOffsetX(10);
+        innerShadow.setOffsetY(10);
+        innerShadow.setRadius(9);
+        innerShadow.setChoke(0);
+        innerShadow.setColor(Color.DARKBLUE);
+
+        return innerShadow;
+    }
+
+    //This doesn't actually resize the image when it comes to saving. it just makes the image easier to work on if
+    //it is too big or too small in your screen.
     public static void resizeImage(AnchorPane ancPane, javafx.scene.image.ImageView imageViewer, double scalingLvl) {
         ancPane.setScaleX(scalingLvl);
         ancPane.setScaleY(scalingLvl);

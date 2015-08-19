@@ -76,6 +76,7 @@
                 <MenuItem fx:id="dropShadow" mnemonicParsing="false" text="Drop Shadow" />
                   <MenuItem fx:id="blndModeMultiply" mnemonicParsing="false" text="Blend Mode Multiply" visible="false" />
                   <MenuItem fx:id="reflectionBtn" mnemonicParsing="false" text="Reflection" />
+                  <MenuItem fx:id="innerShadowBtn" mnemonicParsing="false" text="Inner Shadow" />
               </items>
             </Menu>
       </menus>

@@ -1,0 +1,50 @@
+proImageshop Readme:
+
+Virtually all of my code is located in AdvancedImageFilters, BlurImage, ColoringImage, FullImage, ImageshopController.
+Also, in imageshop.fxml and styles.css.  ImageshopController also has some of Adam's code that I used with his permission.
+
+1. Coloring and Filter pen filers stack.  You can do several and they will
+all save in addition to one another on the image.
+
+2.  Only a single advanced, blur, sepia, or hue tone saves on the photo at a time.
+So, if you blur and then try to set hue it will not stack; your blur will become a hue.
+
+3. Scaling factor is only available so that user can see the picture he/she
+is editing.  I was having a problem that some huge images were impossible
+to see the entirety of (and some small images were too small).  This scaling factor will scale the image to the screen
+so you can play with it.  It wont actually save the image to a different size though.
+
+4.  Any unused code in this application is code that someone may want to make the application bigger / more complex.
+For example, I left the singleton (Adam's code) even though I don't use most of it.  I also left a few setters that I don't use and a
+few methods within ImageTransform that I don't really use.  This is still good code that could be useful if this thing
+ever becomes more complex.
+
+
+Project specs:
+
+1. user can open a .jpg or .png.  On my computer there is a drop menu so you can view
+either .jpg or .pngs that are available for open. You can also save file as .jpg or .png by just clicking save as and typing:
+image_title.jpg  or image_title.png.
+
+2.  I have more than 10 unique filter transforming operations.
+    I have 8 coloring filters, 2 slider filters, 3 blur filters, 3 advanced filters.  Some of these are similar, but
+    I had fun messing with each individually.
+
+4. The menus at the top of my GUI can be used to execute various commands per
+project specs.
+
+5.  Executable jar does not exist yet...
+
+6.  I have gone above and beyond filters and features. It could certainly be a
+better application, but it could also be worse :-D.
+
+7. User can make a selection and apply multiple filters to that selection.  Specs
+  request that the user apply filters OR (not and) brushes.  I selected filter functionality.
+
+8.  User can undo and redo as many times as he / she wants as long as  the computer in
+use has the memory to hold that many FullImage objects.  I have undo / redo'ed more
+than 50 times on my machine.
+
+
+Any additional questions / issues feel free to e-mail (ralef7@gmail.com) or call (860) 546-8721
+

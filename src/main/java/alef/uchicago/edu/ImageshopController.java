@@ -143,6 +143,9 @@ public class ImageshopController implements Initializable {
     private MenuItem reflectionBtn;
 
     @FXML
+    private MenuItem innerShadowBtn;
+
+    @FXML
     private ToggleButton tgbSquare;
 
     @FXML
@@ -190,8 +193,6 @@ public class ImageshopController implements Initializable {
 
     private Image image;
     private ArrayList<FullImage> fullImageArrayList = new ArrayList<>();
-    private ArrayList<Image> imageViewArrayList = new ArrayList<>();
-    private ArrayList<Effect>  imageViewEffect = new ArrayList<>();
     private ArrayList<BlendMode> imageViewBlendMode = new ArrayList<>();
     private ArrayList<Rotate> imageViewRotate = new ArrayList<>();
     private ArrayList<javafx.scene.shape.Shape> removeShapes = new ArrayList<>(1000);
@@ -211,8 +212,6 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Cc.getInstance().close(imageViewer);
-           //     imageViewArrayList = new ArrayList<>();
-            //    imageViewEffect = new ArrayList<>();
                 imageCount = 0;
 
                 fullImageArrayList = new ArrayList<>();
@@ -234,12 +233,10 @@ public class ImageshopController implements Initializable {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 image = SwingFXUtils.toFXImage(bufferedImage, null);
                 imageViewer.setImage(image);
-
+                imageViewer.setEffect(null);
                 ancPane.setPrefSize(image.getWidth(), image.getHeight());
                 imageViewer.setFitWidth(ancPane.getPrefWidth());
                 imageViewer.setFitHeight(ancPane.getPrefHeight());
-             //   imageViewArrayList.add(image);
-             //  imageViewEffect.add(null);
 
                 fullImageArrayList.add(new FullImage(null, image));
                 imageCount += 1;
@@ -282,7 +279,6 @@ public class ImageshopController implements Initializable {
                 }
             }
         });
-        javafx.scene.shape.Rectangle filteredRect = new javafx.scene.shape.Rectangle();
 
         ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
@@ -320,12 +316,9 @@ public class ImageshopController implements Initializable {
                     case SQUARE:
                         shape = new javafx.scene.shape.Rectangle(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
                         break;
-
-
                     default:
                         shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
                         break;
-
                 }
 
                 shape.setStroke(mColor);
@@ -350,11 +343,8 @@ public class ImageshopController implements Initializable {
 
                      setMyImage(snapshot, imageViewer.getEffect());
                      ancPane.getChildren().removeAll(removeShapes);
-                   //  removeShapes.clear();
-
-
+                     removeShapes.clear();
                  }
-
 
                  Image transformImage = snapShot(wPosForMouseEvent - xPosForMouseEvent, hPosForMouseEvent - yPosForMouseEvent);
 
@@ -572,6 +562,13 @@ public class ImageshopController implements Initializable {
             }
         });
 
+        innerShadowBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                setMyImage(imageViewer.getImage(), AdvancedImageFilters.innerShadowImage());
+            }
+        });
+
         sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             sepiaLvl = newValue.doubleValue();
         });
@@ -611,7 +608,6 @@ public class ImageshopController implements Initializable {
     private void setMyImage(Image image, Effect effect){
 
         if (fullImageArrayList.size() != imageCount)
-      //  if (imageViewArrayList.size() != imageCount)
         {
             //Fixed bug where if you started undoing through arraylists and then started applying filters again, you would
             //skip one of the applied filters when resuming your undo.
@@ -623,16 +619,10 @@ public class ImageshopController implements Initializable {
         }
         FullImage fullImage = new FullImage(effect, image);
         fullImageArrayList.add(fullImage);
-     //   imageViewArrayList.add(image);
-     //   imageViewEffect.add(effect);
-     //   imageViewEffect = new ArrayList<>(imageViewEffect.subList(0, imageCount));
-     //   imageViewArrayList = new ArrayList<>(imageViewArrayList.subList(0, imageCount));
         fullImageArrayList = new ArrayList<>(fullImageArrayList.subList(0, imageCount));
 
         //fixed this gnarly bug where if you began rebuilding your arraylist after undoing some, it would
         //hold the wrong image in imageCount-1.  Hard to spot. should be fixed. hollaaaa
-      //  imageViewArrayList.set(imageCount - 1, image);
-      //  imageViewEffect.set(imageCount - 1, effect);
         fullImageArrayList.set(imageCount - 1, fullImage);
 
         imageViewer.setEffect(effect);
@@ -641,40 +631,29 @@ public class ImageshopController implements Initializable {
 
     private void undo() {
         if (fullImageArrayList.size() == imageCount)
-   //     if (imageViewArrayList.size() == imageCount)
         {
             imageCount = Math.max(0, imageCount-2);
             FullImage backupImage = fullImageArrayList.get(imageCount);
             imageViewer.setImage(backupImage.getImage());
             imageViewer.setEffect(backupImage.getEffect());
-
-        //    imageViewer.setImage(imageViewArrayList.get(imageCount));
-        //    imageViewer.setEffect(imageViewEffect.get(imageCount));
-
         }
         else
         {
             if (fullImageArrayList.size() < 1) return;
-      //      if (imageViewArrayList.size() < 1) return;
             imageCount = Math.max(0, imageCount - 1);
             FullImage backupImage = fullImageArrayList.get(imageCount);
             imageViewer.setImage(backupImage.getImage());
             imageViewer.setEffect(backupImage.getEffect());
-           // imageViewer.setImage(imageViewArrayList.get(imageCount));
-           // imageViewer.setEffect(imageViewEffect.get(imageCount));
         }
     }
 
     private void redo()
     {
         if (fullImageArrayList.size() < 1 || imageCount >= fullImageArrayList.size()-1) return;
-      //  if (imageViewArrayList.size() < 1 || imageCount >= imageViewArrayList.size()-1) return;
         imageCount = Math.max(0, imageCount + 1);
         FullImage redoImage = fullImageArrayList.get(imageCount);
         imageViewer.setImage(redoImage.getImage());
         imageViewer.setEffect(redoImage.getEffect());
-       // imageViewer.setImage(imageViewArrayList.get(imageCount));
-       // imageViewer.setEffect(imageViewEffect.get(imageCount));
     }
 
     private Image snapShot(double width, double height){
