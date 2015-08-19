@@ -83,7 +83,7 @@
     </MenuBar>
       <BorderPane prefHeight="783.0" prefWidth="914.0">
          <bottom>
-            <AnchorPane fx:id="ancPane" prefHeight="584.0" prefWidth="914.0" style="-fx-background-color: Grey; visibility: false;" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="ancPane" prefHeight="341.0" prefWidth="914.0" style="-fx-background-color: Grey; visibility: false;" BorderPane.alignment="CENTER">
                <children>
                   <ImageView fx:id="imageViewer" fitHeight="379.0" fitWidth="914.0" pickOnBounds="true" preserveRatio="true" />
                </children>
@@ -102,29 +102,29 @@
                      </children>
                   </VBox>
                   <Slider fx:id="opacitySlider" layoutX="1.0" layoutY="25.0" max="1.0" prefHeight="17.0" prefWidth="648.0" value="0.75" visible="false" />
-                  <Slider fx:id="sepiaSlider" layoutX="160.0" layoutY="59.0" prefHeight="17.0" prefWidth="648.0" />
-                  <Slider fx:id="scalingSlider" layoutX="160.0" layoutY="93.0" max="2.0" min="0.1" prefHeight="17.0" prefWidth="648.0" value="1.0" />
+                  <Slider fx:id="sepiaSlider" layoutX="160.0" layoutY="34.0" prefHeight="17.0" prefWidth="648.0" />
+                  <Slider fx:id="scalingSlider" layoutX="160.0" layoutY="80.0" max="2.0" min="0.1" prefHeight="17.0" prefWidth="648.0" value="1.0" />
                   <Label layoutX="7.0" layoutY="4.0" prefHeight="21.0" prefWidth="116.0" text="Opacity Level" visible="false" />
-                  <Label layoutX="173.0" layoutY="32.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" />
-                  <Label layoutX="171.0" layoutY="74.0" text="Scaling Factor Just for App (won't save resize)" />
-                  <Label layoutX="173.0" layoutY="116.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
-                  <Slider fx:id="hueSlider" blockIncrement="0.1" focusTraversable="false" layoutX="160.0" layoutY="142.0" majorTickUnit="0.1" max="1.0" minorTickCount="1" prefHeight="17.0" prefWidth="648.0" showTickMarks="true" snapToTicks="true" />
+                  <Label layoutX="173.0" layoutY="15.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" />
+                  <Label layoutX="175.0" layoutY="56.0" text="Scaling Factor Just for App (won't save resize)" />
+                  <Label layoutX="178.0" layoutY="91.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
+                  <Slider fx:id="hueSlider" blockIncrement="0.1" focusTraversable="false" layoutX="160.0" layoutY="121.0" majorTickUnit="0.1" max="1.0" minorTickCount="1" prefHeight="17.0" prefWidth="648.0" showTickMarks="true" snapToTicks="true" />
                   <Button fx:id="opacityBtn" layoutX="648.0" layoutY="18.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Opacity" visible="false">
                      <font>
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="sepiaBtn" layoutX="818.0" layoutY="59.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Sepia">
+                  <Button fx:id="sepiaBtn" layoutX="818.0" layoutY="31.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Sepia">
                      <font>
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="hueBtn" layoutX="818.0" layoutY="130.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Hue">
+                  <Button fx:id="hueBtn" layoutX="818.0" layoutY="117.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Hue">
                      <font>
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="scalingBtn" layoutX="818.0" layoutY="89.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Scaling">
+                  <Button fx:id="scalingBtn" layoutX="818.0" layoutY="76.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Scaling">
                      <font>
                         <Font size="12.0" />
                      </font>

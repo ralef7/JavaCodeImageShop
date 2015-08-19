@@ -33,10 +33,12 @@ image_title.jpg  or image_title.png.
 4. The menus at the top of my GUI can be used to execute various commands per
 project specs.
 
-5.  Executable jar does not exist yet...
+5.  Click Maven Projects, open Lifecycle and double click install. The jar will appear in
+your target directory.
 
-6.  I have gone above and beyond filters and features. It could certainly be a
-better application, but it could also be worse :-D.
+6.  I have gone above and beyond filters and features in a couple ways I guess. It could certainly be a
+better application, but it could also be worse :-D. (Note about reflection: if you can't see it, size your image smaller
+and it will appear at the bottom of the screen image).
 
 7. User can make a selection and apply multiple filters to that selection.  Specs
   request that the user apply filters OR (not and) brushes.  I selected filter functionality.
