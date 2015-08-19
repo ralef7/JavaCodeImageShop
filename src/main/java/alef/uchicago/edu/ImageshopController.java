@@ -233,15 +233,18 @@ public class ImageshopController implements Initializable {
              //   Cc.getInstance().setImageAndRefreshView(image);
                 imageViewer.setImage(image);
 
+
                 ancPane.setPrefSize(image.getWidth(), image.getHeight());
                 imageViewer.setFitWidth(ancPane.getPrefWidth());
                 imageViewer.setFitHeight(ancPane.getPrefHeight());
                 imageViewArrayList.add(image);
                 imageViewEffect.add(null);
                 imageCount += 1;
+
             } catch (IOException ex) {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
+            System.out.println("imageCount: " + imageCount + ", " + "arraylistSize: " + imageViewArrayList.size());
         });
 
         undoOption.setOnAction(new EventHandler<ActionEvent>() {
@@ -565,6 +568,7 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage());
+                System.out.println("imageCount: " + imageCount + ", " + "imageViewArraylistsize: " + imageViewArrayList.size());
             }
         });
 
@@ -622,9 +626,13 @@ public class ImageshopController implements Initializable {
         imageViewEffect.add(effect);
         imageViewEffect = new ArrayList<>(imageViewEffect.subList(0, imageCount));
         imageViewArrayList = new ArrayList<>(imageViewArrayList.subList(0, imageCount));
+        //fixed this gnarly bug where if you began rebuilding your arraylist after undoing some, it would
+        //hold the wrong image in imageCount-1.  Hard to spot. should be fixed. hollaaaa
+        imageViewArrayList.set(imageCount-1, image);
+        imageViewEffect.set(imageCount-1, effect);
         imageViewer.setEffect(effect);
         imageViewer.setImage(image);
-        System.out.println("Just added " + image.toString());
+        System.out.println("imageCount " + imageCount + " arraynumsize " + imageViewArrayList.size());
     }
 
     private void undo() {
@@ -634,6 +642,8 @@ public class ImageshopController implements Initializable {
             imageCount = Math.max(0, imageCount-2);
             imageViewer.setImage(imageViewArrayList.get(imageCount));
             imageViewer.setEffect(imageViewEffect.get(imageCount));
+            System.out.println("imageCount " + imageCount + "arraynumsize" + imageViewArrayList.size());
+
         }
         else
         {
@@ -643,8 +653,9 @@ public class ImageshopController implements Initializable {
             imageCount = Math.max(0, imageCount - 1);
             imageViewer.setImage(imageViewArrayList.get(imageCount));
             imageViewer.setEffect(imageViewEffect.get(imageCount));
-            System.out.println("After pointing to: " + imageViewer.getImage().toString());
-            System.out.println(imageViewArrayList.toString());
+            System.out.println("imageCount " + imageCount + "arraynumsize" + imageViewArrayList.size());
+
+
         }
     }
 
@@ -656,6 +667,8 @@ public class ImageshopController implements Initializable {
         imageCount = Math.max(0, imageCount + 1);
         imageViewer.setImage(imageViewArrayList.get(imageCount));
         imageViewer.setEffect(imageViewEffect.get(imageCount));
+        System.out.println("imageCount " + imageCount + "arraynumsize" + imageViewArrayList.size());
+
     }
 
     private Image snapShot(double width, double height){
