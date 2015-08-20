@@ -81,14 +81,7 @@
             </Menu>
       </menus>
     </MenuBar>
-      <BorderPane prefHeight="783.0" prefWidth="914.0">
-         <bottom>
-            <AnchorPane fx:id="ancPane" prefHeight="341.0" prefWidth="914.0" style="-fx-background-color: Grey; visibility: false;" BorderPane.alignment="CENTER">
-               <children>
-                  <ImageView fx:id="imageViewer" fitHeight="379.0" fitWidth="914.0" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </AnchorPane>
-         </bottom>
+      <BorderPane prefHeight="174.0" prefWidth="914.0">
          <top>
             <Pane prefHeight="167.0" prefWidth="745.0" BorderPane.alignment="CENTER">
                <children>
@@ -105,26 +98,26 @@
                   <Slider fx:id="sepiaSlider" layoutX="160.0" layoutY="34.0" prefHeight="17.0" prefWidth="648.0" />
                   <Slider fx:id="scalingSlider" layoutX="160.0" layoutY="80.0" max="2.0" min="0.1" prefHeight="17.0" prefWidth="648.0" value="1.0" />
                   <Label layoutX="7.0" layoutY="4.0" prefHeight="21.0" prefWidth="116.0" text="Opacity Level" visible="false" />
-                  <Label layoutX="173.0" layoutY="15.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" />
-                  <Label layoutX="175.0" layoutY="56.0" text="Scaling Factor Just for App (won't save resize)" />
-                  <Label layoutX="178.0" layoutY="91.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
+                  <Label layoutX="183.0" layoutY="20.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" textFill="#0a0a0a" />
+                  <Label layoutX="183.0" layoutY="56.0" text="Scaling Factor Just for App (won't save resize)" />
+                  <Label layoutX="183.0" layoutY="97.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
                   <Slider fx:id="hueSlider" blockIncrement="0.1" focusTraversable="false" layoutX="160.0" layoutY="121.0" majorTickUnit="0.1" max="1.0" minorTickCount="1" prefHeight="17.0" prefWidth="648.0" showTickMarks="true" snapToTicks="true" />
                   <Button fx:id="opacityBtn" layoutX="648.0" layoutY="18.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Opacity" visible="false">
                      <font>
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="sepiaBtn" layoutX="818.0" layoutY="31.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Sepia">
+                  <Button fx:id="sepiaBtn" layoutX="818.0" layoutY="31.0" mnemonicParsing="false" prefWidth="90.0" style="-fx-background-color: Black;" text="Apply Sepia" textFill="#d73333">
                      <font>
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="hueBtn" layoutX="818.0" layoutY="117.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Hue">
+                  <Button fx:id="hueBtn" layoutX="818.0" layoutY="117.0" mnemonicParsing="false" prefWidth="90.0" style="-fx-background-color: Black;" text="Apply Hue" textFill="#d03939">
                      <font>
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="scalingBtn" layoutX="818.0" layoutY="76.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Scaling">
+                  <Button fx:id="scalingBtn" layoutX="818.0" layoutY="76.0" mnemonicParsing="false" prefWidth="90.0" style="-fx-background-color: Black;" text="Apply Scaling" textFill="#e12c2c">
                      <font>
                         <Font size="12.0" />
                      </font>
@@ -133,5 +126,14 @@
             </Pane>
          </top>
       </BorderPane>
+      <Pane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <AnchorPane fx:id="ancPane" prefHeight="651.0" prefWidth="914.0" style="-fx-background-color: Grey; visibility: false;">
+               <children>
+                  <ImageView fx:id="imageViewer" fitHeight="379.0" fitWidth="914.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </AnchorPane>
+         </children>
+      </Pane>
   </children>
 </VBox>
