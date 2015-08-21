@@ -1,6 +1,7 @@
 package alef.uchicago.edu;
 
 import javafx.scene.effect.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
@@ -44,9 +45,10 @@ public class AdvancedImageFilters {
 
     //This doesn't actually resize the image when it comes to saving. it just makes the image easier to work on if
     //it is too big or too small in your screen.
-    public static void resizeImage(AnchorPane ancPane, javafx.scene.image.ImageView imageViewer, double scalingLvl) {
-        ancPane.setScaleX(scalingLvl);
-        ancPane.setScaleY(scalingLvl);
+    public static void resizeImage(Image image, AnchorPane ancPane, javafx.scene.image.ImageView imageViewer, double scalingLvl) {
+
+        ancPane.setPrefSize(scalingLvl * image.getWidth(), scalingLvl * image.getHeight());
+       // ancPane.setScaleY(scalingLvl);
         imageViewer.setFitWidth(ancPane.getPrefWidth());
         imageViewer.setFitHeight(ancPane.getPrefHeight());
     }

@@ -34,14 +34,14 @@ image_title.jpg  or image_title.png.
 project specs.
 
 5.  Click Maven Projects, open Lifecycle and double click install. The jar will appear in
-your target directory.
+your target directory.  It did for me.
 
 6.  I have gone above and beyond filters and features in a couple ways I guess. It could certainly be a
 better application, but it could also be worse :-D. (Note about reflection: if you can't see it, size your image smaller
 and it will appear at the bottom of the screen image).
 
-7. User can make a selection and apply multiple filters to that selection.  Specs
-  request that the user apply filters OR (not and) brushes.  I selected filter functionality.
+7. User can make a selection and apply multiple filters to that selection. Brushes also exist that can color
+the image in a variety of brush shapes.
 
 8.  User can undo and redo as many times as he / she wants as long as  the computer in
 use has the memory to hold that many FullImage objects.  I have undo / redo'ed more

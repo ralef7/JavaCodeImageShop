@@ -81,23 +81,24 @@
             </Menu>
       </menus>
     </MenuBar>
-      <BorderPane prefHeight="174.0" prefWidth="914.0">
+      <BorderPane prefHeight="261.0" prefWidth="916.0">
          <top>
-            <Pane prefHeight="167.0" prefWidth="745.0" BorderPane.alignment="CENTER">
+            <Pane prefHeight="219.0" prefWidth="915.0" BorderPane.alignment="CENTER">
                <children>
-                  <VBox prefHeight="167.0" prefWidth="160.0">
+                  <VBox prefHeight="194.0" prefWidth="160.0">
                      <children>
                         <ToggleButton fx:id="tgbCircle" mnemonicParsing="false" prefHeight="31.0" prefWidth="171.0" text="Circle" />
+                        <ToggleButton fx:id="tgbSquare" mnemonicParsing="false" prefHeight="31.0" prefWidth="162.0" text="Square" />
+                        <ToggleButton fx:id="tgbSunlight" mnemonicParsing="false" prefHeight="31.0" prefWidth="161.0" text="Sunlight" />
                         <ToggleButton fx:id="tgbFilter" blendMode="SRC_ATOP" mnemonicParsing="false" prefHeight="31.0" prefWidth="165.0" text="Add Filter Pen" />
                         <ComboBox fx:id="cboSome" blendMode="LIGHTEN" prefHeight="31.0" prefWidth="161.0" />
                         <ColorPicker fx:id="colorPicker" prefHeight="34.0" prefWidth="161.0" />
-                        <ToggleButton fx:id="tgbSquare" mnemonicParsing="false" prefHeight="31.0" prefWidth="162.0" text="Square" visible="false" />
                      </children>
                   </VBox>
-                  <Slider fx:id="opacitySlider" layoutX="1.0" layoutY="25.0" max="1.0" prefHeight="17.0" prefWidth="648.0" value="0.75" visible="false" />
+                  <Slider fx:id="sldSize" layoutX="160.0" layoutY="162.0" prefHeight="17.0" prefWidth="648.0" value="50.0" />
                   <Slider fx:id="sepiaSlider" layoutX="160.0" layoutY="34.0" prefHeight="17.0" prefWidth="648.0" />
                   <Slider fx:id="scalingSlider" layoutX="160.0" layoutY="80.0" max="2.0" min="0.1" prefHeight="17.0" prefWidth="648.0" value="1.0" />
-                  <Label layoutX="7.0" layoutY="4.0" prefHeight="21.0" prefWidth="116.0" text="Opacity Level" visible="false" />
+                  <Label layoutX="177.0" layoutY="138.0" prefHeight="21.0" prefWidth="116.0" text="Brush Size Slider" />
                   <Label layoutX="183.0" layoutY="20.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" textFill="#0a0a0a" />
                   <Label layoutX="183.0" layoutY="56.0" text="Scaling Factor Just for App (won't save resize)" />
                   <Label layoutX="183.0" layoutY="97.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
@@ -126,11 +127,11 @@
             </Pane>
          </top>
       </BorderPane>
-      <Pane prefHeight="200.0" prefWidth="200.0">
+      <Pane fx:id="imgPane" prefHeight="614.0" prefWidth="914.0">
          <children>
-            <AnchorPane fx:id="ancPane" prefHeight="651.0" prefWidth="914.0" style="-fx-background-color: Grey; visibility: false;">
+            <AnchorPane fx:id="ancPane" prefHeight="612.0" prefWidth="914.0" style="-fx-background-color: Grey; visibility: false;">
                <children>
-                  <ImageView fx:id="imageViewer" fitHeight="379.0" fitWidth="914.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="imageViewer" fitHeight="614.0" fitWidth="914.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </AnchorPane>
          </children>

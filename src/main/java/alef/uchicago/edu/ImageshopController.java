@@ -4,7 +4,6 @@ package alef.uchicago.edu;
  * Created by Robert on 8/10/2015.
  */
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.LocatorEx;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -12,15 +11,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-import java.awt.*;
-import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.ScrollPane;
-import java.awt.Shape;
-import java.awt.event.MouseEvent;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,16 +23,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.*;
 import javafx.scene.shape.*;
+import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.stage.FileChooser;
 import javax.imageio.ImageIO;
@@ -50,17 +41,16 @@ public class ImageshopController implements Initializable {
     private ToggleGroup mToggleGroup = new ToggleGroup();
 
     public enum Pen {
-        CIRCLE, SQUARE, FIL, OTHER;
+        CIRCLE, SQUARE, FIL, SUNLIGHT;
     }
 
     public enum FilterStyle {
-        SAT, DRK,  BRIGHT, INVERT, MONOCHROME, GOLD, DESATURATE, WHITEOUT, BLACKOUT, OTHER
-    }
+        SAT, DRK,  BRIGHT, INVERT, MONOCHROME, GOLD, DESATURATE, WHITEOUT, BLACKOUT }
 
     private int penSize = 50;
     private Pen penStyle = Pen.CIRCLE;
     private FilterStyle mFilterStyle = FilterStyle.DRK;
-    private javafx.scene.paint.Color mColor;
+    private javafx.scene.paint.Color mColor = javafx.scene.paint.Color.WHITE;
 
     @FXML
     private ComboBox<String> cboSome;
@@ -103,7 +93,7 @@ public class ImageshopController implements Initializable {
 
 
     @FXML
-    private Slider opacitySlider;
+    private Slider sldSize;
 
     @FXML
     private Slider scalingSlider;
@@ -152,6 +142,9 @@ public class ImageshopController implements Initializable {
     private ToggleButton tgbCircle;
 
     @FXML
+    private ToggleButton tgbSunlight;
+
+    @FXML
     private ToggleButton tgbFilter;
 
     @FXML
@@ -173,6 +166,9 @@ public class ImageshopController implements Initializable {
     private MenuItem gradientMenu;
 
     @FXML
+    private javafx.scene.control.ScrollPane scrollPane;
+
+    @FXML
     private ComboBox<String> boxFilters;
 
     @FXML
@@ -190,6 +186,9 @@ public class ImageshopController implements Initializable {
     @FXML
     private Button scalingBtn;
     private double scalingLvl;
+
+    @FXML
+    private Pane imgPane;
 
     private Image image;
     private ArrayList<FullImage> fullImageArrayList = new ArrayList<>();
@@ -215,7 +214,7 @@ public class ImageshopController implements Initializable {
             public void handle(ActionEvent event) {
                 Cc.getInstance().close(imageViewer);
                 imageCount = 0;
-
+                ancPane.setVisible(false);
                 fullImageArrayList = new ArrayList<>();
             }
         });
@@ -236,6 +235,7 @@ public class ImageshopController implements Initializable {
                 image = SwingFXUtils.toFXImage(bufferedImage, null);
                 imageViewer.setImage(image);
                 imageViewer.setEffect(null);
+
                 ancPane.setPrefSize(image.getWidth(), image.getHeight());
                 imageViewer.setFitWidth(ancPane.getPrefWidth());
                 imageViewer.setFitHeight(ancPane.getPrefHeight());
@@ -262,14 +262,12 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 redo();
+
             }
         });
 
         saveAsOption.setOnAction(e -> saveToFile());
 
-//        opacitySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-//            opacityLvl = newValue.doubleValue();
-//        });
         mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
@@ -279,7 +277,10 @@ public class ImageshopController implements Initializable {
                     penStyle = Pen.SQUARE;
                 } else if (newValue == tgbFilter) {
                     penStyle = Pen.FIL;
-                } else {
+                } else if (newValue == tgbSunlight) {
+                    penStyle = Pen.SUNLIGHT;
+                }
+                else {
                     penStyle = Pen.FIL;
                 }
             }
@@ -321,6 +322,9 @@ public class ImageshopController implements Initializable {
                     case SQUARE:
                         shape = new javafx.scene.shape.Rectangle(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
                         break;
+                    case SUNLIGHT:
+                        shape = new Polygon( xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
+                        break;
                     default:
                         shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
                         break;
@@ -342,13 +346,16 @@ public class ImageshopController implements Initializable {
                  System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
                  wPosForMouseEvent = (int) event.getX();
                  hPosForMouseEvent = (int) event.getY();
-                 if (penStyle == Pen.CIRCLE || penStyle == Pen.SQUARE){
+                 if (penStyle == Pen.CIRCLE || penStyle == Pen.SQUARE || penStyle == Pen.SUNLIGHT){
 
                      Image snapshot = snapShot(viewerWidth, viewerHeight);
-                    // Cc.getInstance().setImageAndRefreshView(snapshot);
                      setMyImage(snapshot, imageViewer.getEffect());
                      ancPane.getChildren().removeAll(removeShapes);
                      removeShapes.clear();
+                     System.out.println("Image params: " + "Height: " + imageViewer.getImage().getHeight() + "Width: " + imageViewer.getImage().getWidth());
+                     System.out.println("ImageViewer params: " + "Height: " + imageViewer.getFitHeight() + "Width: " + imageViewer.getFitWidth());
+                     System.out.println("AncPane params: " + "Height: " + ancPane.getHeight() + " Width " + ancPane.getWidth());
+                     System.out.println("Pane Params: " + "Height: " + imgPane.getHeight() + "Width " + imgPane.getWidth());
 
                  }
                  else {
@@ -479,6 +486,7 @@ public class ImageshopController implements Initializable {
         tgbCircle.setToggleGroup(mToggleGroup);
         tgbSquare.setToggleGroup(mToggleGroup);
         tgbFilter.setToggleGroup(mToggleGroup);
+        tgbSunlight.setToggleGroup(mToggleGroup);
         tgbFilter.setSelected(true);
 
         mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
@@ -488,6 +496,8 @@ public class ImageshopController implements Initializable {
                     penStyle = Pen.SQUARE;
                 } else if (newValue == tgbFilter) {
                     penStyle = Pen.FIL;
+                } else if (newValue == tgbSunlight) {
+                    penStyle = Pen.SUNLIGHT;
                 } else {
                     penStyle = Pen.CIRCLE;
                 }
@@ -503,19 +513,22 @@ public class ImageshopController implements Initializable {
                     penStyle = Pen.SQUARE;
                 } else if (newValue == tgbFilter) {
                     penStyle = Pen.FIL;
-                } else {
+                } else if (newValue == tgbSunlight){
+                    penStyle = Pen.SUNLIGHT;
+                }
+                else {
                     penStyle = Pen.FIL;
                 }
             }
         });
 
-//        sldSize.valueProperty().addListener(new ChangeListener<Number>() {
-//            @Override
-//            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-//                double temp = (Double) newValue; //automatic unboxing
-//                penSize = (int) Math.round(temp);
-//            }
-//        });
+        sldSize.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                double temp = (Double) newValue; //automatic unboxing
+                penSize = (int) Math.round(temp);
+            }
+        });
 
         //blur menu items
         gaussianBlur.setOnAction(event -> setMyImage(imageViewer.getImage(), blurryEffect.gaussianBlurImage()));
@@ -531,7 +544,7 @@ public class ImageshopController implements Initializable {
         invertMenuItem.setOnAction(event -> setMyImage(ColoringImage.invertColorImage(imageViewer), imageViewer.getEffect()));
         goldenMenuItem.setOnAction(event -> setMyImage(ColoringImage.goldenBlingOutImage(imageViewer), imageViewer.getEffect()));
         desaturateMenuItem.setOnAction(event -> setMyImage(ColoringImage.desaturateImage(imageViewer), imageViewer.getEffect()));
-        gradientMenu.setOnAction(event -> setMyImage(ColoringImage.linearGradientImage(imageViewer), imageViewer.getEffect()));
+      //  gradientMenu.setOnAction(event -> setMyImage(ColoringImage.linearGradientImage(imageViewer), imageViewer.getEffect()));
 
         //Other advanced filters and actions for image
         hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -559,7 +572,8 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
 
-                AdvancedImageFilters.resizeImage(ancPane, imageViewer, scalingLvl);
+                AdvancedImageFilters.resizeImage(imageViewer.getImage(), ancPane, imageViewer, scalingLvl);
+                imageViewer.setImage(snapShot(viewerWidth, viewerHeight));
             }
         });
 
