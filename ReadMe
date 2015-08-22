@@ -2,6 +2,7 @@ proImageshop Readme:
 
 Virtually all of my code is located in AdvancedImageFilters, BlurImage, ColoringImage, FullImage, ImageshopController.
 Also, in imageshop.fxml and styles.css.  ImageshopController also has some of Adam's code that I used with his permission.
+All of the other code is borrowed directly from jaLabJava.
 
 1. Coloring and Filter pen filers stack.  You can do several and they will
 all save in addition to one another on the image.
@@ -9,16 +10,10 @@ all save in addition to one another on the image.
 2.  Only a single advanced, blur, sepia, or hue tone saves on the photo at a time.
 So, if you blur and then try to set hue it will not stack; your blur will become a hue.
 
-3. Scaling factor is only available so that user can see the picture he/she
-is editing.  I was having a problem that some huge images were impossible
-to see the entirety of (and some small images were too small).  This scaling factor will scale the image to the screen
-so you can play with it.  It wont actually save the image to a different size though.
-
-4.  Any unused code in this application is code that someone may want to make the application bigger / more complex.
+3.  Any unused code in this application is code that someone may want to make the application bigger / more complex.
 For example, I left the singleton (Adam's code) even though I don't use most of it.  I also left a few setters that I don't use and a
 few methods within ImageTransform that I don't really use.  This is still good code that could be useful if this thing
-ever becomes more complex.
-
+ever becomes more complex.  Unused variables and esoteric methods that are not used have been removed to make code more readable.
 
 Project specs:
 
@@ -30,18 +25,18 @@ image_title.jpg  or image_title.png.
     I have 8 coloring filters, 2 slider filters, 3 blur filters, 3 advanced filters.  Some of these are similar, but
     I had fun messing with each individually.
 
-4. The menus at the top of my GUI can be used to execute various commands per
+4. The menus at the top of my GUI are used organize various commands per
 project specs.
 
 5.  Click Maven Projects, open Lifecycle and double click install. The jar will appear in
 your target directory.  It did for me.
 
 6.  I have gone above and beyond filters and features in a couple ways I guess. It could certainly be a
-better application, but it could also be worse :-D. (Note about reflection: if you can't see it, size your image smaller
-and it will appear at the bottom of the screen image).
+better application, but it could also be worse :-D.
 
 7. User can make a selection and apply multiple filters to that selection. Brushes also exist that can color
-the image in a variety of brush shapes.
+the image in a variety of brush shapes.  The Sunlight brush I had trouble naming.  It kind of looks like rays of sunlight
+coming down on the image like in the pictures that kids draw of the sun.
 
 8.  User can undo and redo as many times as he / she wants as long as  the computer in
 use has the memory to hold that many FullImage objects.  I have undo / redo'ed more

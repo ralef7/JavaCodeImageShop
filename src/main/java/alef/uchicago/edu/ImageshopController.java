@@ -13,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -75,9 +74,6 @@ public class ImageshopController implements Initializable {
 
     @FXML
     private MenuItem closeOption;
-
-    @FXML
-    private MenuItem saveOption;
 
     @FXML
     private ImageView imageViewer;
@@ -166,9 +162,6 @@ public class ImageshopController implements Initializable {
     private MenuItem gradientMenu;
 
     @FXML
-    private javafx.scene.control.ScrollPane scrollPane;
-
-    @FXML
     private ComboBox<String> boxFilters;
 
     @FXML
@@ -178,10 +171,6 @@ public class ImageshopController implements Initializable {
     @FXML
     private Button sepiaBtn;
     private double sepiaLvl;
-
-    @FXML
-    private Button opacityBtn;
-    private double opacityLvl;
 
     @FXML
     private Button scalingBtn;
