@@ -63,6 +63,13 @@
                   <MenuItem fx:id="innerShadowBtn" mnemonicParsing="false" text="Inner Shadow" />
               </items>
             </Menu>
+            <Menu fx:id="mnuBlendMode" mnemonicParsing="false" text="Blend Mode">
+              <items>
+                <MenuItem fx:id="mnuItemDifferenceBlend" mnemonicParsing="false" text="Difference Blend" />
+                  <MenuItem fx:id="mnuItemColorBurnBlend" mnemonicParsing="false" text="Color Burn Blend" />
+                  <MenuItem fx:id="blendModeOff" mnemonicParsing="false" text="BlendMode Off" />
+              </items>
+            </Menu>
       </menus>
     </MenuBar>
       <BorderPane prefHeight="261.0" prefWidth="916.0">

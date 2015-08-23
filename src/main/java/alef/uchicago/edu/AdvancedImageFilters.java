@@ -25,8 +25,8 @@ public class AdvancedImageFilters {
 
     public static Effect dropShadowImage(){
         DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(.7);
-        dropShadow.setOffsetY(5);
+        dropShadow.setOffsetX(.8);
+        dropShadow.setOffsetY(10);
         return dropShadow;
     }
 
