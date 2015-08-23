@@ -5,7 +5,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -35,7 +34,6 @@ public class Cc {
             stateManager = new Cc();
             backImages = new LinkedList<>();
         }
-
         return stateManager;
     }
 
@@ -79,8 +77,6 @@ public class Cc {
         return out;
     }
 
-
-
     public Stage getMainStage() {
         return mMainStage;
     }
@@ -101,19 +97,6 @@ public class Cc {
         return img;
     }
 
-    public void undo(){
-
-        if (imgUndo != null){
-            this.img = imgUndo;
-            imageViewer.setImage(img);
-        }
-    }
-
-    public void redo(){
-
-    }
-
-
     public void setImageAndRefreshView(Image img){
         imgUndo = this.img;
         this.img = img;
@@ -121,7 +104,6 @@ public class Cc {
 
 
     }
-
 
     public void close(ImageView imageView){
 

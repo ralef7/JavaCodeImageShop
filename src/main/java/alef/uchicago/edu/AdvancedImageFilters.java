@@ -5,8 +5,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
-import javax.swing.text.html.ImageView;
-
 /**
  * Created by Robert on 8/14/2015.
  */
@@ -48,7 +46,6 @@ public class AdvancedImageFilters {
     public static void resizeImage(Image image, AnchorPane ancPane, javafx.scene.image.ImageView imageViewer, double scalingLvl) {
 
         ancPane.setPrefSize(scalingLvl * image.getWidth(), scalingLvl * image.getHeight());
-       // ancPane.setScaleY(scalingLvl);
         imageViewer.setFitWidth(ancPane.getPrefWidth());
         imageViewer.setFitHeight(ancPane.getPrefHeight());
     }

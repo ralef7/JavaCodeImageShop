@@ -16,7 +16,6 @@ public class BlurImage {
         return blurEffect;
     }
 
-
     public Effect boxBlurImage(){
         BoxBlur boxBlurEffect = new BoxBlur();
         boxBlurEffect.setWidth(7);

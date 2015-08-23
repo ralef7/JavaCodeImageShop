@@ -19,9 +19,8 @@ public class FullImage {
         return effect;
     }
 
-    public void setEffect(Effect effect) {
-        this.effect = effect;
-    }
+    public void setEffect(Effect effect) {this.effect = effect;}
+
     public Image getImage() {
         return image;
     }

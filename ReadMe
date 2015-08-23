@@ -23,7 +23,8 @@ image_title.jpg  or image_title.png.
 
 2.  I have more than 10 unique filter transforming operations.
     I have 8 coloring filters, 2 slider filters, 3 blur filters, 3 advanced filters.  Some of these are similar, but
-    I had fun messing with each individually.
+    I had fun messing with each individually.  Linear gradient image never really worked right, but I left it anyways since
+    someone out there who someday uses my application may want to use that filter.
 
 4. The menus at the top of my GUI are used organize various commands per
 project specs.
@@ -38,7 +39,7 @@ better application, but it could also be worse :-D.
 the image in a variety of brush shapes.  The Sunlight brush I had trouble naming.  It kind of looks like rays of sunlight
 coming down on the image like in the pictures that kids draw of the sun.
 
-8.  User can undo and redo as many times as he / she wants as long as  the computer in
+8.  User can undo and redo as many times as user wants as long as the computer in
 use has the memory to hold that many FullImage objects.  I have undo / redo'ed more
 than 50 times on my machine.
 

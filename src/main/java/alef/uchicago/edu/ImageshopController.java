@@ -28,6 +28,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
@@ -278,18 +280,14 @@ public class ImageshopController implements Initializable {
         ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
             public void handle(javafx.scene.input.MouseEvent event) {
-                System.out.println("Mouse pressed at point " + event.getX() + " and " + event.getY());
-                if (penStyle == Pen.FIL) {
-
+                if (penStyle == Pen.FIL)
+                {
                     xPosForMouseEvent = (int) event.getX();
                     yPosForMouseEvent = (int) event.getY();
-
-                    System.out.println("printing at " + xPosForMouseEvent + " " + yPosForMouseEvent);
                 }
                 event.consume();
             }
         });
-
 
         ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, new EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
@@ -327,7 +325,6 @@ public class ImageshopController implements Initializable {
                 event.consume();
             }
         });
-
 
         ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, new EventHandler<javafx.scene.input.MouseEvent>() {
              @Override
@@ -533,7 +530,7 @@ public class ImageshopController implements Initializable {
         invertMenuItem.setOnAction(event -> setMyImage(ColoringImage.invertColorImage(imageViewer), imageViewer.getEffect()));
         goldenMenuItem.setOnAction(event -> setMyImage(ColoringImage.goldenBlingOutImage(imageViewer), imageViewer.getEffect()));
         desaturateMenuItem.setOnAction(event -> setMyImage(ColoringImage.desaturateImage(imageViewer), imageViewer.getEffect()));
-      //  gradientMenu.setOnAction(event -> setMyImage(ColoringImage.linearGradientImage(imageViewer), imageViewer.getEffect()));
+        gradientMenu.setOnAction(event -> setMyImage(ColoringImage.linearGradientImage(imageViewer), imageViewer.getEffect()));
 
         //Other advanced filters and actions for image
         hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
