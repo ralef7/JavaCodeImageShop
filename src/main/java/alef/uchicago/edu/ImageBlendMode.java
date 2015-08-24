@@ -1,7 +1,6 @@
 package alef.uchicago.edu;
 
 import javafx.scene.effect.BlendMode;
-import javafx.scene.image.ImageView;
 
 /**
  * Created by Robert on 8/23/2015.

@@ -233,181 +233,152 @@ public class ImageshopController implements Initializable {
             }
         });
 
-        undoOption.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                undo();
+        undoOption.setOnAction(event -> undo());
 
-                }
-        });
-
-        redoOption.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                redo();
-
-            }
-        });
+        redoOption.setOnAction(event -> redo());
 
         saveAsOption.setOnAction(e -> saveToFile());
 
-        mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                if (newValue == tgbCircle) {
-                    penStyle = Pen.CIRCLE;
-                } else if (newValue == tgbSquare) {
-                    penStyle = Pen.SQUARE;
-                } else if (newValue == tgbFilter) {
-                    penStyle = Pen.FIL;
-                } else if (newValue == tgbSunlight) {
-                    penStyle = Pen.SUNLIGHT;
-                } else {
-                    penStyle = Pen.FIL;
-                }
+        mToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == tgbCircle) {
+                penStyle = Pen.CIRCLE;
+            } else if (newValue == tgbSquare) {
+                penStyle = Pen.SQUARE;
+            } else if (newValue == tgbFilter) {
+                penStyle = Pen.FIL;
+            } else if (newValue == tgbSunlight) {
+                penStyle = Pen.SUNLIGHT;
+            } else {
+                penStyle = Pen.FIL;
             }
         });
 
-        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, new EventHandler<javafx.scene.input.MouseEvent>() {
-            @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-                if (penStyle == Pen.FIL)
-                {
-                    xPosForMouseEvent = (int) event.getX();
-                    yPosForMouseEvent = (int) event.getY();
-                }
-                event.consume();
-            }
-        });
-
-        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, new EventHandler<javafx.scene.input.MouseEvent>() {
-            @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-                if (penStyle == Pen.FIL) {
-                    event.consume();
-                    return;
-                }
+        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
+            if (penStyle == Pen.FIL)
+            {
                 xPosForMouseEvent = (int) event.getX();
                 yPosForMouseEvent = (int) event.getY();
+            }
+            event.consume();
+        });
 
-                int nShape = 0;
-                //default value
-                javafx.scene.shape.Shape shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, 10);
-                switch (penStyle) {
-                    case CIRCLE:
-                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
+        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, event -> {
+            if (penStyle == Pen.FIL) {
+                event.consume();
+                return;
+            }
+            xPosForMouseEvent = (int) event.getX();
+            yPosForMouseEvent = (int) event.getY();
+
+            int nShape = 0;
+            //default value
+            Shape shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, 10);
+            switch (penStyle) {
+                case CIRCLE:
+                    shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
+                    break;
+                case SQUARE:
+                    shape = new Rectangle(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
+                    break;
+                case SUNLIGHT:
+                    shape = new Polygon(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
+                    break;
+                default:
+                    shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
+                    break;
+            }
+
+            shape.setStroke(mColor);
+            shape.setFill(mColor);
+
+            ancPane.getChildren().add(shape);
+            removeShapes.add(shape);
+            event.consume();
+        });
+
+        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, event -> {
+            System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
+            wPosForMouseEvent = (int) event.getX();
+            hPosForMouseEvent = (int) event.getY();
+            if (penStyle == Pen.CIRCLE || penStyle == Pen.SQUARE || penStyle == Pen.SUNLIGHT) {
+
+                Image snapshot = snapShot(viewerWidth, viewerHeight);
+                setMyImage(snapshot, imageViewer.getEffect(), imageViewer.getBlendMode());
+                ancPane.getChildren().removeAll(removeShapes);
+                removeShapes.clear();
+                System.out.println("Image params: " + "Height: " + imageViewer.getImage().getHeight() + "Width: " + imageViewer.getImage().getWidth());
+                System.out.println("ImageViewer params: " + "Height: " + imageViewer.getFitHeight() + "Width: " + imageViewer.getFitWidth());
+                System.out.println("AncPane params: " + "Height: " + ancPane.getHeight() + " Width " + ancPane.getWidth());
+                System.out.println("Pane Params: " + "Height: " + imgPane.getHeight() + "Width " + imgPane.getWidth());
+
+            } else {
+
+                Image transformImage = snapShot(wPosForMouseEvent - xPosForMouseEvent, hPosForMouseEvent - yPosForMouseEvent);
+
+                switch (mFilterStyle) {
+                    case DRK:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1, .5, 1) : c
+                        );
                         break;
-                    case SQUARE:
-                        shape = new javafx.scene.shape.Rectangle(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
+                    case SAT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1.0 / .1, 1.0, 1.0) : c
+                        );
                         break;
-                    case SUNLIGHT:
-                        shape = new Polygon(xPosForMouseEvent, yPosForMouseEvent, penSize, penSize);
+                    case BRIGHT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.brighter() : c
+                        );
+                        break;
+                    case MONOCHROME:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.grayscale() : c
+                        );
+                        break;
+                    case INVERT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                        && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.invert() : c
+                        );
+                        System.out.println("should have painted: " + xPosForMouseEvent + " " + yPosForMouseEvent + " to " + wPosForMouseEvent + " " + hPosForMouseEvent);
+                        break;
+                    case GOLD:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
+                                        && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.interpolate(javafx.scene.paint.Color.GOLD, .7) : c
+                        );
+                        break;
+                    case DESATURATE:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                        && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.desaturate() : c
+                        );
+                        break;
+                    case WHITEOUT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                        && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.web("White") : c
+                        );
+                        break;
+                    case BLACKOUT:
+                        transformImage = ImageTransform.transform(imageViewer.getImage(),
+                                (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
+                                        && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.web("Black") : c
+                        );
                         break;
                     default:
-                        shape = new Circle(xPosForMouseEvent, yPosForMouseEvent, penSize);
-                        break;
                 }
-
-                shape.setStroke(mColor);
-                shape.setFill(mColor);
-
-                ancPane.getChildren().add(shape);
-                removeShapes.add(shape);
-                event.consume();
+                setMyImage(transformImage, imageViewer.getEffect(), imageViewer.getBlendMode());
             }
+            event.consume();
         });
 
-        ancPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, new EventHandler<javafx.scene.input.MouseEvent>() {
-            @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-                System.out.println("Mouse released at: " + event.getX() + " " + event.getY());
-                wPosForMouseEvent = (int) event.getX();
-                hPosForMouseEvent = (int) event.getY();
-                if (penStyle == Pen.CIRCLE || penStyle == Pen.SQUARE || penStyle == Pen.SUNLIGHT) {
-
-                    Image snapshot = snapShot(viewerWidth, viewerHeight);
-                    setMyImage(snapshot, imageViewer.getEffect(), imageViewer.getBlendMode());
-                    ancPane.getChildren().removeAll(removeShapes);
-                    removeShapes.clear();
-                    System.out.println("Image params: " + "Height: " + imageViewer.getImage().getHeight() + "Width: " + imageViewer.getImage().getWidth());
-                    System.out.println("ImageViewer params: " + "Height: " + imageViewer.getFitHeight() + "Width: " + imageViewer.getFitWidth());
-                    System.out.println("AncPane params: " + "Height: " + ancPane.getHeight() + " Width " + ancPane.getWidth());
-                    System.out.println("Pane Params: " + "Height: " + imgPane.getHeight() + "Width " + imgPane.getWidth());
-
-                } else {
-
-                    Image transformImage = snapShot(wPosForMouseEvent - xPosForMouseEvent, hPosForMouseEvent - yPosForMouseEvent);
-
-                    switch (mFilterStyle) {
-                        case DRK:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                            && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1, .5, 1) : c
-                            );
-                            break;
-                        case SAT:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                            && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.deriveColor(0, 1.0 / .1, 1.0, 1.0) : c
-                            );
-                            break;
-                        case BRIGHT:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                            && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.brighter() : c
-                            );
-                            break;
-                        case MONOCHROME:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                            && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.grayscale() : c
-                            );
-                            break;
-                        case INVERT:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
-                                            && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.invert() : c
-                            );
-                            System.out.println("should have painted: " + xPosForMouseEvent + " " + yPosForMouseEvent + " to " + wPosForMouseEvent + " " + hPosForMouseEvent);
-                            break;
-                        case GOLD:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (x > xPosForMouseEvent && x < wPosForMouseEvent)
-                                            && (y > yPosForMouseEvent && y < hPosForMouseEvent) ? c.interpolate(javafx.scene.paint.Color.GOLD, .7) : c
-                            );
-                            break;
-                        case DESATURATE:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
-                                            && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.desaturate() : c
-                            );
-                            break;
-                        case WHITEOUT:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
-                                            && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.web("White") : c
-                            );
-                            break;
-                        case BLACKOUT:
-                            transformImage = ImageTransform.transform(imageViewer.getImage(),
-                                    (x, y, c) -> (xPosForMouseEvent < x && wPosForMouseEvent > x
-                                            && yPosForMouseEvent < y && hPosForMouseEvent > y) ? c.web("Black") : c
-                            );
-                            break;
-                        default:
-                    }
-                    setMyImage(transformImage, imageViewer.getEffect(), imageViewer.getBlendMode());
-                }
-                event.consume();
-            }
-        });
-
-        colorPicker.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                mColor = colorPicker.getValue();
-            }
-        });
+        colorPicker.setOnAction(event -> mColor = colorPicker.getValue());
 
         cboSome.getItems().addAll(
                 "Darker",
@@ -421,41 +392,38 @@ public class ImageshopController implements Initializable {
                 "Whiteout"
         );
 
-        cboSome.valueProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                switch (newValue) {
-                    case "Saturate":
-                        mFilterStyle = FilterStyle.SAT;
-                        break;
-                    case "Darker":
-                        mFilterStyle = FilterStyle.DRK;
-                        break;
-                    case "Brighter":
-                        mFilterStyle = FilterStyle.BRIGHT;
-                        break;
-                    case "Invert":
-                        mFilterStyle = FilterStyle.INVERT;
-                        break;
-                    case "Bling":
-                        mFilterStyle = FilterStyle.GOLD;
-                        break;
-                    case "Monochrome":
-                        mFilterStyle = FilterStyle.MONOCHROME;
-                        break;
-                    case "Desaturate":
-                        mFilterStyle = FilterStyle.DESATURATE;
-                        break;
-                    case "Blackout":
-                        mFilterStyle = FilterStyle.BLACKOUT;
-                        break;
-                    case "Whiteout":
-                        mFilterStyle = FilterStyle.WHITEOUT;
-                        break;
-                    default:
-                        mFilterStyle = FilterStyle.DRK;
-                        break;
-                }
+        cboSome.valueProperty().addListener((observable, oldValue, newValue) -> {
+            switch (newValue) {
+                case "Saturate":
+                    mFilterStyle = FilterStyle.SAT;
+                    break;
+                case "Darker":
+                    mFilterStyle = FilterStyle.DRK;
+                    break;
+                case "Brighter":
+                    mFilterStyle = FilterStyle.BRIGHT;
+                    break;
+                case "Invert":
+                    mFilterStyle = FilterStyle.INVERT;
+                    break;
+                case "Bling":
+                    mFilterStyle = FilterStyle.GOLD;
+                    break;
+                case "Monochrome":
+                    mFilterStyle = FilterStyle.MONOCHROME;
+                    break;
+                case "Desaturate":
+                    mFilterStyle = FilterStyle.DESATURATE;
+                    break;
+                case "Blackout":
+                    mFilterStyle = FilterStyle.BLACKOUT;
+                    break;
+                case "Whiteout":
+                    mFilterStyle = FilterStyle.WHITEOUT;
+                    break;
+                default:
+                    mFilterStyle = FilterStyle.DRK;
+                    break;
             }
         });
 
@@ -465,44 +433,35 @@ public class ImageshopController implements Initializable {
         tgbSunlight.setToggleGroup(mToggleGroup);
         tgbFilter.setSelected(true);
 
-        mToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                if (newValue == tgbSquare) {
-                    penStyle = Pen.SQUARE;
-                } else if (newValue == tgbFilter) {
-                    penStyle = Pen.FIL;
-                } else if (newValue == tgbSunlight) {
-                    penStyle = Pen.SUNLIGHT;
-                } else {
-                    penStyle = Pen.CIRCLE;
-                }
+        mToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == tgbSquare) {
+                penStyle = Pen.SQUARE;
+            } else if (newValue == tgbFilter) {
+                penStyle = Pen.FIL;
+            } else if (newValue == tgbSunlight) {
+                penStyle = Pen.SUNLIGHT;
+            } else {
+                penStyle = Pen.CIRCLE;
             }
         });
 
-        mToggleGroup.selectedToggleProperty().addListener(new javafx.beans.value.ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                if (newValue == tgbCircle) {
-                    penStyle = Pen.CIRCLE;
-                } else if (newValue == tgbSquare) {
-                    penStyle = Pen.SQUARE;
-                } else if (newValue == tgbFilter) {
-                    penStyle = Pen.FIL;
-                } else if (newValue == tgbSunlight) {
-                    penStyle = Pen.SUNLIGHT;
-                } else {
-                    penStyle = Pen.FIL;
-                }
+        mToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == tgbCircle) {
+                penStyle = Pen.CIRCLE;
+            } else if (newValue == tgbSquare) {
+                penStyle = Pen.SQUARE;
+            } else if (newValue == tgbFilter) {
+                penStyle = Pen.FIL;
+            } else if (newValue == tgbSunlight) {
+                penStyle = Pen.SUNLIGHT;
+            } else {
+                penStyle = Pen.FIL;
             }
         });
 
-        sldSize.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                double temp = (Double) newValue; //automatic unboxing
-                penSize = (int) Math.round(temp);
-            }
+        sldSize.valueProperty().addListener((observable, oldValue, newValue) -> {
+            double temp = (Double) newValue; //automatic unboxing
+            penSize = (int) Math.round(temp);
         });
 
         //blur menu items
@@ -531,49 +490,21 @@ public class ImageshopController implements Initializable {
         hueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             hueLvl = newValue.doubleValue();
         });
-        hueBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(imageViewer.getImage(), AdvancedImageFilters.setHue(hueLvl), imageViewer.getBlendMode());
-            }
-        });
+        hueBtn.setOnAction(event -> setMyImage(imageViewer.getImage(), AdvancedImageFilters.setHue(hueLvl), imageViewer.getBlendMode()));
 
-        reflectionBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(imageViewer.getImage(), AdvancedImageFilters.reflection(), imageViewer.getBlendMode());
-            }
-        });
+        reflectionBtn.setOnAction(event -> setMyImage(imageViewer.getImage(), AdvancedImageFilters.reflection(), imageViewer.getBlendMode()));
 
-        dropShadow.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage(), imageViewer.getBlendMode());
-            }
-        });
+        dropShadow.setOnAction(event -> setMyImage(imageViewer.getImage(), AdvancedImageFilters.dropShadowImage(), imageViewer.getBlendMode()));
 
-        innerShadowBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                setMyImage(imageViewer.getImage(), AdvancedImageFilters.innerShadowImage(), imageViewer.getBlendMode());
-            }
-        });
+        innerShadowBtn.setOnAction(event -> setMyImage(imageViewer.getImage(), AdvancedImageFilters.innerShadowImage(), imageViewer.getBlendMode()));
 
         sepiaSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             sepiaLvl = newValue.doubleValue();
         });
-        sepiaBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                sepiaEffect.setLevel(sepiaLvl);
-                setMyImage(imageViewer.getImage(), sepiaEffect, imageViewer.getBlendMode());
-            }
+        sepiaBtn.setOnAction(event -> {
+            sepiaEffect.setLevel(sepiaLvl);
+            setMyImage(imageViewer.getImage(), sepiaEffect, imageViewer.getBlendMode());
         });
-
-//        blndModeMultiply.setOnAction(event -> {blendModeMultiply(imageViewer);
-//            imageViewArrayList.add(snapShot(imageViewer.getImage().getWidth(), imageViewer.getImage().getHeight()));
-//            imageCount += 1;});
-//
     }
 
         private void saveToFile(){

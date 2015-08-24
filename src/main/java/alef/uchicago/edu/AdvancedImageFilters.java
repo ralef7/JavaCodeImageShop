@@ -41,8 +41,7 @@ public class AdvancedImageFilters {
         return innerShadow;
     }
 
-    //This doesn't actually resize the image when it comes to saving. it just makes the image easier to work on if
-    //it is too big or too small in your screen.
+    //Caused weird bugs within javaFX.  I'm leaving the code here in case I revisit this feature, but for now I have removed said functionality from the application.
     public static void resizeImage(Image image, AnchorPane ancPane, javafx.scene.image.ImageView imageViewer, double scalingLvl) {
 
         ancPane.setPrefSize(scalingLvl * image.getWidth(), scalingLvl * image.getHeight());

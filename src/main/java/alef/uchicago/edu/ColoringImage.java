@@ -79,12 +79,9 @@ public class ColoringImage {
     public static Image linearGradientImage(ImageView imageView) {
         javafx.scene.paint.Color wickedGradient = javafx.scene.paint.Color.GREEN.interpolate(javafx.scene.paint.Color.RED, 35 / 100);
         Image curImage = imageView.getImage();
-        Image desaturate = ImageTransform.transform(curImage, new ColorTransformer() {
-            @Override
-            public javafx.scene.paint.Color apply(int x, int y, javafx.scene.paint.Color colorAtXY) {
-                return colorAtXY.interpolate(wickedGradient, .35);
-            }
+        Image gradient = ImageTransform.transform(curImage, (x, y, colorAtXY) -> {
+            return colorAtXY.interpolate(wickedGradient, .35);
         });
-        return desaturate;
+        return gradient;
     }
 }
