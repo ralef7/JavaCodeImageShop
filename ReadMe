@@ -15,13 +15,16 @@ For example, I left the singleton (Adam's code) even though I don't use most of 
 few methods within ImageTransform that I don't really use.  This is still good code that could be useful if this thing
 ever becomes more complex.  Unused variables and esoteric methods that are not used have been removed to make code more readable.
 
-4. BlendModes should be applied last since they look at what colors are currently on the image before making their effects.  So,
+4. BlendModes should be applied carefully since they look at what colors are currently on the image before making their effects.  So,
 if you begin adding lots of white, a blendmode may decide to just make your entire image black.  It's working properly, but is contrasting
 colors you did not originally intend to contrast. For this reason, I added a blendmode off button.  I think it makes things more convenient.
 
 Project specs:
 
-1. user can open a .jpg or .png.  On my computer there is a drop menu so you can view
+Created photoshop 'lite' application proImageshop using JavaFX FXML, Java8 Lambdas, FXML and CSS
+per project specs.  No streams were included per class discussion about the project.
+
+1. user can open a .jpg or .png.  On my computer, after clicking open, there is a drop menu so you can view
 either .jpg or .pngs that are available for open. You can also save file as .jpg or .png by just clicking save as and typing:
 image_title.jpg  or image_title.png.
 
@@ -47,6 +50,7 @@ coming down on the image like in the pictures that kids draw of the sun.
 use has the memory to hold that many FullImage objects.  I have undo / redo'ed more
 than 50 times on my machine.
 
+Comments in the code are designed to help explain things and enable grader to navigate code more quickly.
 
 Any additional questions / issues feel free to e-mail (ralef7@gmail.com) or call (860) 546-8721
 
