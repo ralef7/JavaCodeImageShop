@@ -87,11 +87,9 @@
                      </children>
                   </VBox>
                   <Slider fx:id="sldSize" layoutX="160.0" layoutY="162.0" prefHeight="17.0" prefWidth="648.0" value="50.0" />
-                  <Slider fx:id="sepiaSlider" layoutX="160.0" layoutY="34.0" prefHeight="17.0" prefWidth="648.0" />
-                  <Slider fx:id="scalingSlider" layoutX="160.0" layoutY="80.0" max="2.0" min="0.1" prefHeight="17.0" prefWidth="648.0" value="1.0" />
+                  <Slider fx:id="sepiaSlider" layoutX="160.0" layoutY="68.0" prefHeight="17.0" prefWidth="648.0" />
                   <Label layoutX="177.0" layoutY="138.0" prefHeight="21.0" prefWidth="116.0" text="Brush Size Slider" />
-                  <Label layoutX="183.0" layoutY="20.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" textFill="#0a0a0a" />
-                  <Label layoutX="183.0" layoutY="56.0" text="Scaling Factor Just for App (won't save resize)" />
+                  <Label layoutX="179.0" layoutY="46.0" prefHeight="21.0" prefWidth="89.0" text="Sepia Tone" textFill="#0a0a0a" />
                   <Label layoutX="183.0" layoutY="97.0" prefHeight="19.0" prefWidth="80.0" text="Hue Setter" />
                   <Slider fx:id="hueSlider" blockIncrement="0.1" focusTraversable="false" layoutX="160.0" layoutY="121.0" majorTickUnit="0.1" max="1.0" minorTickCount="1" prefHeight="17.0" prefWidth="648.0" showTickMarks="true" snapToTicks="true" />
                   <Button fx:id="opacityBtn" layoutX="648.0" layoutY="18.0" mnemonicParsing="false" prefWidth="90.0" text="Apply Opacity" visible="false">
@@ -99,17 +97,12 @@
                         <Font size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="sepiaBtn" layoutX="818.0" layoutY="31.0" mnemonicParsing="false" prefWidth="90.0" style="-fx-background-color: Black;" text="Apply Sepia" textFill="#d73333">
+                  <Button fx:id="sepiaBtn" layoutX="818.0" layoutY="64.0" mnemonicParsing="false" prefWidth="90.0" style="-fx-background-color: Black;" text="Apply Sepia" textFill="#d73333">
                      <font>
                         <Font size="12.0" />
                      </font>
                   </Button>
                   <Button fx:id="hueBtn" layoutX="818.0" layoutY="117.0" mnemonicParsing="false" prefWidth="90.0" style="-fx-background-color: Black;" text="Apply Hue" textFill="#d03939">
-                     <font>
-                        <Font size="12.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="scalingBtn" layoutX="818.0" layoutY="76.0" mnemonicParsing="false" prefWidth="90.0" style="-fx-background-color: Black;" text="Apply Scaling" textFill="#e12c2c">
                      <font>
                         <Font size="12.0" />
                      </font>

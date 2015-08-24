@@ -100,9 +100,6 @@ public class ImageshopController implements Initializable {
     private Slider sldSize;
 
     @FXML
-    private Slider scalingSlider;
-
-    @FXML
     private Slider sepiaSlider;
 
     @FXML
@@ -128,10 +125,6 @@ public class ImageshopController implements Initializable {
 
     @FXML
     private MenuItem dropShadow;
-
-
-    @FXML
-    private MenuItem blndModeMultiply;
 
     @FXML
     private MenuItem reflectionBtn;
@@ -170,19 +163,12 @@ public class ImageshopController implements Initializable {
     private MenuItem gradientMenu;
 
     @FXML
-    private ComboBox<String> boxFilters;
-
-    @FXML
     private Button hueBtn;
     private double hueLvl;
 
     @FXML
     private Button sepiaBtn;
     private double sepiaLvl;
-
-    @FXML
-    private Button scalingBtn;
-    private double scalingLvl;
 
     @FXML
     private Pane imgPane;
@@ -211,6 +197,7 @@ public class ImageshopController implements Initializable {
                 imageCount = 0;
                 ancPane.setVisible(false);
                 fullImageArrayList = new ArrayList<>();
+                imageViewer.setBlendMode(null);
             }
         });
 
@@ -555,19 +542,6 @@ public class ImageshopController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 setMyImage(imageViewer.getImage(), AdvancedImageFilters.reflection(), imageViewer.getBlendMode());
-            }
-        });
-
-        scalingSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            scalingLvl = newValue.doubleValue();
-        });
-
-        scalingBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                AdvancedImageFilters.resizeImage(imageViewer.getImage(), ancPane, imageViewer, scalingLvl);
-                imageViewer.setImage(snapShot(viewerWidth, viewerHeight));
             }
         });
 
