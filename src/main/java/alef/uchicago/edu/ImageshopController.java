@@ -190,15 +190,12 @@ public class ImageshopController implements Initializable {
 
         cboSome.setValue("Darker");
 
-        closeOption.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Cc.getInstance().close(imageViewer);
-                imageCount = 0;
-                ancPane.setVisible(false);
-                fullImageArrayList = new ArrayList<>();
-                imageViewer.setBlendMode(null);
-            }
+        closeOption.setOnAction(event -> {
+            Cc.getInstance().close(imageViewer);
+            imageCount = 0;
+            ancPane.setVisible(false);
+            fullImageArrayList = new ArrayList<>();
+            imageViewer.setBlendMode(null);
         });
 
         openImage.setOnAction(t -> {
