@@ -1,3 +1,9 @@
+This was a final project for advanced java. It was an opportunity to build something a bit more complex with javaFX, FXML and
+lambdas.  It has a couple small bugs (still can't really get images to resize and hold onto changes properly so I removed that
+feature.) For the most part, it functions to spec. Again, I was provided base code in ImageTransform that I use for the
+various image transformations.
+
+
 proImageshop Readme:
 
 Virtually all of my code is located in AdvancedImageFilters, BlurImage, ColoringImage, FullImage, ImageshopController, and BlendMode.
