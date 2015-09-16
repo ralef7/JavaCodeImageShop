@@ -3,6 +3,8 @@ lambdas.  It has a couple small bugs (still can't really get images to resize an
 feature.) For the most part, it functions to spec. Again, I was provided base code in ImageTransform that I use for the
 various image transformations.
 
+This project requires java 8 compatibility to run.  Clone and import the project into Intellij or some other IDE of the best
+viewing of code.  Run the application through MainApp.
 
 proImageshop Readme:
 
